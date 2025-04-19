@@ -33,7 +33,8 @@ export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs
     addTrialData({
       phase,
       trialNumber: currentPairIndex + 1,
-      condition: `p=${currentPair.p1} vs p=${currentPair.p2}`,
+      condition: `final_probability_choice_p${currentPair.p1}_vs_p${currentPair.p2}`,
+      stimulus: choiceIndex === 0 ? "stimulus-a" : "stimulus-c",
       choice: choiceIndex === 0 ? "left" : "right",
       outcome: success,
       points: success ? 100 : 0,

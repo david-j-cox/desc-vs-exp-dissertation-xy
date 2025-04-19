@@ -25,12 +25,14 @@ export default function SingleChoice({ onAdvance, addTrialData }: SingleChoicePr
   const handleChoice = (selectedChoice: string) => {
     setChoice(selectedChoice)
 
-    // Record trial data
+    // Record trial data with more detailed information
     addTrialData({
       phase: 5,
       trialNumber: 1,
-      condition: "final choice",
+      condition: "final_blue_orange_choice",
+      stimulus: "blue vs orange",
       choice: selectedChoice,
+      points: 0, // No points for final choice
     })
 
     // Advance after delay

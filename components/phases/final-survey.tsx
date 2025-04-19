@@ -59,11 +59,23 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
       addTrialData({
         phase: 7,
         trialNumber: 1,
-        condition: "survey",
+        condition: field === "prolificId" ? "prolific_id" : "survey_response",
         stimulus: field,
         choice: response,
       })
     })
+
+    // Store Prolific ID in localStorage for data export
+    try {
+      const storedData = localStorage.getItem("experiment-data")
+      if (storedData) {
+        const data = JSON.parse(storedData)
+        data.participantId = responses.prolificId
+        localStorage.setItem("experiment-data", JSON.stringify(data))
+      }
+    } catch (error) {
+      console.error("Error updating Prolific ID:", error)
+    }
 
     setSubmitted(true)
     onComplete()
