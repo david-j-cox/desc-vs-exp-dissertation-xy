@@ -27,7 +27,7 @@ export default function SingleChoice({ onAdvance, addTrialData }: SingleChoicePr
 
     // Record trial data with more detailed information
     addTrialData({
-      phase: 5,
+      phase: 7,
       trialNumber: 1,
       condition: "final_blue_orange_choice",
       stimulus: "blue vs orange",

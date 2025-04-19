@@ -32,7 +32,7 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
 
     // Record trial data
     addTrialData({
-      phase: 4,
+      phase: 6,
       trialNumber: trialCount + 1,
       condition: "blue vs orange",
       choice,

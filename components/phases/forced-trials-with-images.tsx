@@ -67,7 +67,7 @@ export default function ForcedTrialsWithImages({ onAdvance, onFail, addTrialData
 
     // Record trial data
     addTrialData({
-      phase: 2,
+      phase: 3,
       trialNumber: trialCount[currentStimulus.id] + 1,
       stimulus: currentStimulus.id,
       outcome: success,
@@ -117,7 +117,7 @@ export default function ForcedTrialsWithImages({ onAdvance, onFail, addTrialData
 
     // Record trial data
     addTrialData({
-      phase: 2,
+      phase: 3,
       trialNumber: choiceTrials + 1,
       condition: "choice",
       stimulus: `${currentPair[0].id} vs ${currentPair[1].id}`,
