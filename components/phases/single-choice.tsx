@@ -1,75 +1,65 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import type { ExperimentData } from "../experiment"
 
 interface SingleChoiceProps {
   onAdvance: () => void
-  addTrialData: (data: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
 }
 
 export default function SingleChoice({ onAdvance, addTrialData }: SingleChoiceProps) {
-  const [choice, setChoice] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [showOutcome, setShowOutcome] = useState(false)
+  const [outcome, setOutcome] = useState<"success" | "failure">("success")
 
-  useEffect(() => {
-    // Add 2-second delay before showing content
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleChoice = (selectedChoice: string) => {
-    setChoice(selectedChoice)
-
-    // Record trial data with more detailed information
+  const handleChoice = (choice: string) => {
+    const isCorrect = choice === "A"
+    const points = isCorrect ? 100 : 0
     addTrialData({
-      phase: 7,
+      phase: "single-choice",
       trialNumber: 1,
-      condition: "final_blue_orange_choice",
-      stimulus: "blue vs orange",
-      choice: selectedChoice,
-      points: 0, // No points for final choice
+      condition: "single",
+      choice,
+      outcome: isCorrect,
+      points,
     })
 
-    // Advance after delay
-    setTimeout(onAdvance, 2000)
-  }
-
-  if (isLoading) {
-    return <div className="min-h-[400px]"></div>  // Blank screen with minimum height
+    if (isCorrect) {
+      setShowOutcome(true)
+      setOutcome("success")
+      setTimeout(() => {
+        setShowOutcome(false)
+        onAdvance()
+      }, 2000)
+    } else {
+      setShowOutcome(true)
+      setOutcome("failure")
+      setTimeout(() => {
+        setShowOutcome(false)
+      }, 2000)
+    }
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-center">Final Choice</h1>
-
-      <div className="text-center mb-4">
-        <p>If you had only one choice, which would you choose?</p>
-      </div>
-
-      <div className="flex flex-col items-center justify-center space-y-4">
-        <div className="flex space-x-8">
-          <Button
-            className="w-32 h-32 bg-blue-500 text-white text-2xl"
-            onClick={() => handleChoice("blue")}
-            disabled={!!choice}
-          >
-          </Button>
-
-          <Button
-            className="w-32 h-32 bg-orange-500 text-white text-2xl"
-            onClick={() => handleChoice("orange")}
-            disabled={!!choice}
-          >
-          </Button>
+    <div className="flex flex-col items-center justify-center min-h-[400px]">
+      {showOutcome ? (
+        <div className="text-center">
+          <p className={`text-4xl font-bold ${outcome === "success" ? "text-green-600" : "text-red-600"}`}>
+            {outcome === "success" ? "✓" : "✗"}
+          </p>
         </div>
-
-        {choice && <p className="text-lg">You chose {choice}. Moving to the next phase...</p>}
-      </div>
+      ) : (
+        <div className="flex flex-col items-center space-y-4">
+          <p className="text-xl font-bold">Make your choice</p>
+          <button
+            className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
+            onClick={() => handleChoice("A")}
+          >
+            Choose A
+          </button>
+        </div>
+      )}
     </div>
   )
 }

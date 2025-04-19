@@ -11,25 +11,11 @@ import type { ExperimentData } from "../experiment"
 
 interface FinalSurveyProps {
   onComplete: () => void
-  addTrialData: (data: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
 }
 
 export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyProps) {
-  const [responses, setResponses] = useState({
-    q1B1: "",
-    q1B2: "",
-    q1B3: "",
-    q1B4: "",
-    q2B1: "",
-    q2B2: "",
-    q2B3: "",
-    q2B4: "",
-    q3: "",
-    q4: "",
-    q5: "",
-    q6: "",
-    prolificId: "",
-  })
+  const [responses, setResponses] = useState<Record<string, string>>({})
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [submitted, setSubmitted] = useState(false)
   const [experimentData, setExperimentData] = useState<ExperimentData | null>(null)
@@ -46,22 +32,15 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
     }
   }, [])
 
-  const handleChange = (field: keyof typeof responses, value: string) => {
-    setResponses((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
   const handleSubmit = () => {
-    // Record survey data including Prolific ID
-    Object.entries(responses).forEach(([field, response]) => {
+    // Record survey responses
+    Object.entries(responses).forEach(([question, answer]) => {
       addTrialData({
-        phase: 9,
+        phase: "final-survey",
         trialNumber: 1,
-        condition: field === "prolificId" ? "prolific_id" : "survey_response",
-        stimulus: field,
-        choice: response,
+        condition: "survey",
+        choice: answer,
+        points: 0,
       })
     })
 
@@ -94,8 +73,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
             </label>
             <Input
               type="number"
-              value={responses.q1B1}
-              onChange={(e) => handleChange("q1B1", e.target.value)}
+              value={responses.q1B1 || ""}
+              onChange={(e) => setResponses({ ...responses, q1B1: e.target.value })}
               className="max-w-[200px] mx-auto"
             />
           </div>
@@ -111,8 +90,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
             </label>
             <Input
               type="number"
-              value={responses.q1B2}
-              onChange={(e) => handleChange("q1B2", e.target.value)}
+              value={responses.q1B2 || ""}
+              onChange={(e) => setResponses({ ...responses, q1B2: e.target.value })}
               className="max-w-[200px] mx-auto"
             />
           </div>
@@ -128,8 +107,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
             </label>
             <Input
               type="number"
-              value={responses.q1B3}
-              onChange={(e) => handleChange("q1B3", e.target.value)}
+              value={responses.q1B3 || ""}
+              onChange={(e) => setResponses({ ...responses, q1B3: e.target.value })}
               className="max-w-[200px] mx-auto"
             />
           </div>
@@ -145,8 +124,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
             </label>
             <Input
               type="number"
-              value={responses.q1B4}
-              onChange={(e) => handleChange("q1B4", e.target.value)}
+              value={responses.q1B4 || ""}
+              onChange={(e) => setResponses({ ...responses, q1B4: e.target.value })}
               className="max-w-[200px] mx-auto"
             />
           </div>
@@ -161,8 +140,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               How consistently do you think points are earned from this button?
             </label>
             <Textarea
-              value={responses.q2B1}
-              onChange={(e) => handleChange("q2B1", e.target.value)}
+              value={responses.q2B1 || ""}
+              onChange={(e) => setResponses({ ...responses, q2B1: e.target.value })}
               className="max-w-[400px] mx-auto"
             />
           </div>
@@ -177,8 +156,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               How consistently do you think points are earned from this button?
             </label>
             <Textarea
-              value={responses.q2B2}
-              onChange={(e) => handleChange("q2B2", e.target.value)}
+              value={responses.q2B2 || ""}
+              onChange={(e) => setResponses({ ...responses, q2B2: e.target.value })}
               className="max-w-[400px] mx-auto"
             />
           </div>
@@ -193,8 +172,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               How consistently do you think points are earned from this button?
             </label>
             <Textarea
-              value={responses.q2B3}
-              onChange={(e) => handleChange("q2B3", e.target.value)}
+              value={responses.q2B3 || ""}
+              onChange={(e) => setResponses({ ...responses, q2B3: e.target.value })}
               className="max-w-[400px] mx-auto"
             />
           </div>
@@ -209,8 +188,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               How consistently do you think points are earned from this button?
             </label>
             <Textarea
-              value={responses.q2B4}
-              onChange={(e) => handleChange("q2B4", e.target.value)}
+              value={responses.q2B4 || ""}
+              onChange={(e) => setResponses({ ...responses, q2B4: e.target.value })}
               className="max-w-[400px] mx-auto"
             />
           </div>
@@ -228,8 +207,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               Which button do you think gives the BEST outcome? (Button 1, Button 2, Button 3, Button 4)
             </label>
             <Input
-              value={responses.q3}
-              onChange={(e) => handleChange("q3", e.target.value)}
+              value={responses.q3 || ""}
+              onChange={(e) => setResponses({ ...responses, q3: e.target.value })}
               className="max-w-[200px] mx-auto"
             />
           </div>
@@ -247,8 +226,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               Which button do you think gives the WORST outcome? (Button 1, Button 2, Button 3, Button 4)
             </label>
             <Input
-              value={responses.q4}
-              onChange={(e) => handleChange("q4", e.target.value)}
+              value={responses.q4 || ""}
+              onChange={(e) => setResponses({ ...responses, q4: e.target.value })}
               className="max-w-[200px] mx-auto"
             />
           </div>
@@ -264,8 +243,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               What strategy did you use to pick between these two buttons?
             </label>
             <Textarea
-              value={responses.q5}
-              onChange={(e) => handleChange("q5", e.target.value)}
+              value={responses.q5 || ""}
+              onChange={(e) => setResponses({ ...responses, q5: e.target.value })}
               className="max-w-[400px] mx-auto"
             />
           </div>
@@ -281,8 +260,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               What strategy did you use to pick between these two buttons?
             </label>
             <Textarea
-              value={responses.q6}
-              onChange={(e) => handleChange("q6", e.target.value)}
+              value={responses.q6 || ""}
+              onChange={(e) => setResponses({ ...responses, q6: e.target.value })}
               className="max-w-[400px] mx-auto"
             />
           </div>
@@ -294,23 +273,23 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               Enter Your Prolific ID Here:
             </label>
             <Input
-              value={responses.prolificId}
-              onChange={(e) => handleChange("prolificId", e.target.value)}
+              value={responses.prolificId || ""}
+              onChange={(e) => setResponses({ ...responses, prolificId: e.target.value })}
               className="max-w-[400px] mx-auto"
               placeholder="Enter your Prolific ID"
             />
             <div className="flex justify-center mt-8">
               <Button 
                 onClick={() => {
-                  if (responses.prolificId.trim()) {
+                  if (responses.prolificId && responses.prolificId.trim()) {
                     handleSubmit()
                     // Close the browser tab
                     window.close()
                   }
                 }}
-                disabled={!responses.prolificId.trim()}
+                disabled={!responses.prolificId || !responses.prolificId.trim()}
                 className={`px-8 py-3 ${
-                  !responses.prolificId.trim() 
+                  !responses.prolificId || !responses.prolificId.trim() 
                     ? 'bg-gray-400 cursor-not-allowed' 
                     : 'bg-green-600 hover:bg-green-700 text-white'
                 }`}
