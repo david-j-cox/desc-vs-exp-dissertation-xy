@@ -1,30 +1,45 @@
-# desc-vs-exp-dissertation
+# Choice Experiment
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+A web-based experiment platform built with Next.js for conducting choice-based behavioral research.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/david-j-coxs-projects/v0-desc-vs-exp-dissertation-0p)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/U3HuPPNCzH3)
+## Features
 
-## Overview
+- Multi-phase experiment workflow
+- Forced trials with image stimuli
+- Blue-orange choice trials
+- Comprehensive final survey
+- Automatic data collection and OSF integration
+- Real-time feedback and point tracking
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## Getting Started
 
-## Deployment
+1. Install dependencies:
+```bash
+pnpm install
+```
 
-Your project is live at:
+2. Start the development server:
+```bash
+pnpm dev
+```
 
-**[https://vercel.com/david-j-coxs-projects/v0-desc-vs-exp-dissertation-0p](https://vercel.com/david-j-coxs-projects/v0-desc-vs-exp-dissertation-0p)**
+3. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Build your app
+## Project Structure
 
-Continue building your app on:
+- `/components` - React components for different experiment phases
+- `/pages` - Next.js pages and routing
+- `/public` - Static assets and images
+- `/styles` - CSS and styling files
 
-**[https://v0.dev/chat/projects/U3HuPPNCzH3](https://v0.dev/chat/projects/U3HuPPNCzH3)**
+## Data Collection
 
-## How It Works
+Experiment data is automatically collected and can be uploaded to OSF (Open Science Framework) through the `/data` endpoint.
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## Development
+
+This project uses:
+- Next.js for the frontend framework
+- Tailwind CSS for styling
+- TypeScript for type safety
+- pnpm for package management
