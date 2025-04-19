@@ -5,11 +5,12 @@ import ConsentPage from "./phases/consent-page"
 import InstructionsPage from "./phases/instructions-page"
 import ForcedTrialsWithImages from "./phases/forced-trials-with-images"
 import ChoiceTrials from "./phases/choice-trials"
+import ForcedBlueAndOrange from "./phases/forced-blue-and-orange"
 import BlueOrangeTrials from "./phases/blue-orange-trials"
 import SingleChoice from "./phases/single-choice"
 import FinalSurvey from "./phases/final-survey"
+import InterConditionInterval from "./phases/inter-condition-interval"
 import { useLocalStorage } from "@/hooks/use-local-storage"
-
 export type ExperimentData = {
   participantId: string
   currentPhase: number
@@ -72,8 +73,8 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-      {/* Only show Total Points during phases 3-6 */}
-      {(currentPhase >= 3 && currentPhase <= 6) && (
+      {/* Only show Total Points during phases 3-7 */}
+      {(currentPhase >= 3 && currentPhase <= 7) && (
         <div className="mb-4 text-center">
           <p className="text-4xl font-bold text-black-900">Total Points: {experimentData.totalPoints}</p>
         </div>
@@ -87,29 +88,41 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
         <ForcedTrialsWithImages onAdvance={advancePhase} addTrialData={addTrialData} onFail={repeatPhase2} />
       )}
 
-      {currentPhase === 4 && (
+      {currentPhase === 4 && <InterConditionInterval onComplete={advancePhase} />}
+
+      {currentPhase === 5 && (
         <ChoiceTrials
           onAdvance={advancePhase}
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
-          phase={3}
+          phase={4}
         />
       )}
 
-      {currentPhase === 5 && <BlueOrangeTrials onAdvance={advancePhase} addTrialData={addTrialData} />}
-
-      {currentPhase === 6 && <SingleChoice onAdvance={advancePhase} addTrialData={addTrialData} />}
+      {currentPhase === 6 && <InterConditionInterval onComplete={advancePhase} />}
 
       {currentPhase === 7 && (
+        <ForcedBlueAndOrange onAdvance={advancePhase} addTrialData={addTrialData} />
+      )}
+
+      {currentPhase === 8 && <InterConditionInterval onComplete={advancePhase} />}
+
+      {currentPhase === 9 && <BlueOrangeTrials onAdvance={advancePhase} addTrialData={addTrialData} />}
+
+      {currentPhase === 10 && <InterConditionInterval onComplete={advancePhase} />}
+
+      {currentPhase === 11 && <SingleChoice onAdvance={advancePhase} addTrialData={addTrialData} />}
+
+      {currentPhase === 12 && (
         <ChoiceTrials
           onAdvance={advancePhase}
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
-          phase={6}
+          phase={8}
         />
       )}
 
-      {currentPhase === 8 && (
+      {currentPhase === 13 && (
         <FinalSurvey
           onComplete={() => {
             alert("Experiment completed! Thank you for your participation.")

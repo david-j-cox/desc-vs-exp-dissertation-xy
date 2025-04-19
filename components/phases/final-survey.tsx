@@ -57,7 +57,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
     // Record survey data including Prolific ID
     Object.entries(responses).forEach(([field, response]) => {
       addTrialData({
-        phase: 7,
+        phase: 9,
         trialNumber: 1,
         condition: field === "prolificId" ? "prolific_id" : "survey_response",
         stimulus: field,
