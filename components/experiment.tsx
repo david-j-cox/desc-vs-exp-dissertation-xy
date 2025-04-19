@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import ConsentPage from "./phases/consent-page"
 import InstructionsPage from "./phases/instructions-page"
 import ForcedTrialsWithImages from "./phases/forced-trials-with-images"
@@ -11,11 +11,27 @@ import SingleChoice from "./phases/single-choice"
 import FinalSurvey from "./phases/final-survey"
 import InterConditionInterval from "./phases/inter-condition-interval"
 import { useLocalStorage } from "@/hooks/use-local-storage"
+
+export type Phase = 
+  | "consent"
+  | "instructions"
+  | "forced-trials-with-images"
+  | "forced-trials-with-images-interval"
+  | "choice-trials"
+  | "choice-trials-interval"
+  | "forced-blue-and-orange"
+  | "forced-blue-and-orange-interval"
+  | "blue-orange-trials"
+  | "blue-orange-trials-interval"
+  | "single-choice"
+  | "final-choice-trials"
+  | "final-survey"
+
 export type ExperimentData = {
   participantId: string
-  currentPhase: number
+  currentPhase: Phase
   trials: {
-    phase: number
+    phase: Phase
     trialNumber: number
     condition?: string
     stimulus?: string
@@ -30,31 +46,46 @@ export type ExperimentData = {
 export default function Experiment({ onComplete }: { onComplete?: () => void }) {
   const [experimentData, setExperimentData] = useLocalStorage<ExperimentData>("experiment-data", {
     participantId: Math.random().toString(36).substring(2, 15),
-    currentPhase: 1,
+    currentPhase: "consent",
     trials: [],
     totalPoints: 0,
   })
 
-  const [currentPhase, setCurrentPhase] = useState<number>(() => experimentData.currentPhase)
+  const [currentPhase, setCurrentPhase] = useState<Phase>(() => experimentData.currentPhase)
 
-  // Only update experimentData when phase changes, but avoid the circular dependency
-  const updatePhase = (newPhase: number) => {
-    // Reset points when advancing to a new phase
+  const updatePhase = (newPhase: Phase) => {
     setCurrentPhase(newPhase)
     setExperimentData((prev) => ({
       ...prev,
       currentPhase: newPhase,
-      totalPoints: 0, // Reset points between phases
+      totalPoints: 0,
     }))
   }
 
-  // Replace all instances of setCurrentPhase with updatePhase
   const advancePhase = () => {
-    updatePhase(currentPhase + 1)
+    const phases: Phase[] = [
+      "consent",
+      "instructions",
+      "forced-trials-with-images",
+      "forced-trials-with-images-interval",
+      "choice-trials",
+      "choice-trials-interval",
+      "forced-blue-and-orange",
+      "forced-blue-and-orange-interval",
+      "blue-orange-trials",
+      "blue-orange-trials-interval",
+      "single-choice",
+      "final-choice-trials",
+      "final-survey"
+    ]
+    const currentIndex = phases.indexOf(currentPhase)
+    if (currentIndex < phases.length - 1) {
+      updatePhase(phases[currentIndex + 1])
+    }
   }
 
   const repeatPhase2 = () => {
-    updatePhase(2)
+    updatePhase("instructions")
   }
 
   const addTrialData = (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => {
@@ -71,69 +102,78 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
     }))
   }
 
+  useEffect(() => {
+    if (currentPhase === "blue-orange-trials") {
+      console.log("Current phase:", currentPhase, "Total Points:", experimentData.totalPoints)
+    }
+  }, [currentPhase, experimentData.totalPoints])
+
   return (
     <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-      {/* Only show Total Points during phases 3-7 */}
-      {(currentPhase >= 3 && currentPhase <= 7) && (
+      {/* Only show Total Points during specific phases */}
+      {(currentPhase === "forced-trials-with-images" || 
+        currentPhase === "choice-trials" || 
+        currentPhase === "forced-blue-and-orange" || 
+        currentPhase === "blue-orange-trials" || 
+        currentPhase === "single-choice") && (
         <div className="mb-4 text-center">
           <p className="text-4xl font-bold text-black-900">Total Points: {experimentData.totalPoints}</p>
         </div>
       )}
 
-      {currentPhase === 1 && <ConsentPage onAdvance={advancePhase} />}
+      {currentPhase === "consent" && <ConsentPage onAdvance={advancePhase} />}
 
-      {currentPhase === 2 && <InstructionsPage onAdvance={advancePhase} />}
+      {currentPhase === "instructions" && <InstructionsPage onAdvance={advancePhase} />}
 
-      {currentPhase === 3 && (
+      {currentPhase === "forced-trials-with-images" && (
         <ForcedTrialsWithImages onAdvance={advancePhase} addTrialData={addTrialData} onFail={repeatPhase2} />
       )}
 
-      {currentPhase === 4 && <InterConditionInterval onComplete={advancePhase} />}
+      {currentPhase === "forced-trials-with-images-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === 5 && (
+      {currentPhase === "choice-trials" && (
         <ChoiceTrials
           onAdvance={advancePhase}
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
-          phase={4}
+          phase="choice-trials"
         />
       )}
 
-      {currentPhase === 6 && <InterConditionInterval onComplete={advancePhase} />}
+      {currentPhase === "choice-trials-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === 7 && (
+      {currentPhase === "forced-blue-and-orange" && (
         <ForcedBlueAndOrange onAdvance={advancePhase} addTrialData={addTrialData} />
       )}
 
-      {currentPhase === 8 && <InterConditionInterval onComplete={advancePhase} />}
+      {currentPhase === "forced-blue-and-orange-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === 9 && <BlueOrangeTrials onAdvance={advancePhase} addTrialData={addTrialData} />}
+      {currentPhase === "blue-orange-trials" && <BlueOrangeTrials onAdvance={advancePhase} addTrialData={addTrialData} />}
 
-      {currentPhase === 10 && <InterConditionInterval onComplete={advancePhase} />}
+      {currentPhase === "blue-orange-trials-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === 11 && <SingleChoice onAdvance={advancePhase} addTrialData={addTrialData} />}
+      {currentPhase === "single-choice" && <SingleChoice onAdvance={advancePhase} addTrialData={addTrialData} />}
 
-      {currentPhase === 12 && (
+      {currentPhase === "final-choice-trials" && (
         <ChoiceTrials
           onAdvance={advancePhase}
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
-          phase={8}
+          phase="final-choice-trials"
         />
       )}
 
-      {currentPhase === 13 && (
+      {currentPhase === "final-survey" && (
         <FinalSurvey
           onComplete={() => {
             alert("Experiment completed! Thank you for your participation.")
-            // Reset experiment for future use
             setExperimentData({
               participantId: Math.random().toString(36).substring(2, 15),
-              currentPhase: 1,
+              currentPhase: "consent",
               trials: [],
               totalPoints: 0,
             })
-            setCurrentPhase(1)
+            setCurrentPhase("consent")
             onComplete?.()
           }}
           addTrialData={addTrialData}

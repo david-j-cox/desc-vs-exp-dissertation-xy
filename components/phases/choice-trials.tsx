@@ -1,15 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import type { ExperimentData } from "../experiment"
 
 interface ChoiceTrialsProps {
   onAdvance: () => void
-  addTrialData: (data: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
   probabilityPairs: { p1: number; p2: number }[]
-  phase: number
+  phase: ExperimentData["currentPhase"]
 }
 
 export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs, phase }: ChoiceTrialsProps) {

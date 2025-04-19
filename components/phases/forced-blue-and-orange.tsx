@@ -41,7 +41,7 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData }: ForcedB
 
     // Record trial data
     addTrialData({
-      phase: 5,
+      phase: "forced-blue-and-orange",
       trialNumber: trialCount + 1,
       condition: `forced_${currentButton.id}`,
       stimulus: currentButton.id,
@@ -75,7 +75,7 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData }: ForcedB
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-center">Learning Phase</h1>
+      <h1 className="text-2xl font-bold text-center"></h1>
 
       <div className="flex flex-col items-center justify-center space-y-4">
         <Button
