@@ -10,14 +10,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <head />
+      <body className="min-h-screen bg-white dark:bg-gray-900">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <div className="min-h-screen flex flex-col">
+            <main className="flex-1 w-full max-w-6xl mx-auto">
+              {children}
+            </main>
+          </div>
         </ThemeProvider>
       </body>
     </html>
