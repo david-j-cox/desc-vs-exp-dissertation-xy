@@ -12,58 +12,97 @@ interface ChoiceTrialsProps {
   phase: ExperimentData["currentPhase"]
 }
 
+type ChoicePair = {
+  left: { stimulus: string; image: string }
+  right: { stimulus: string; image: string }
+}
+
 export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs, phase }: ChoiceTrialsProps) {
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
+
+  const choicePairs: ChoicePair[] = [
+    {
+      left: { stimulus: "stimulus-a", image: "/images/stimulus-a.png" },
+      right: { stimulus: "stimulus-c", image: "/images/stimulus-c.png" }
+    },
+    {
+      left: { stimulus: "stimulus-b", image: "/images/stimulus-b.png" },
+      right: { stimulus: "stimulus-d", image: "/images/stimulus-d.png" }
+    }
+  ]
+
+  useEffect(() => {
+    if (pendingChoice !== null) {
+      const currentPair = probabilityPairs[0]
+      const selectedProbability = pendingChoice.choiceIndex === 0 ? currentPair.p1 : currentPair.p2
+      const choicePair = choicePairs[currentPairIndex]
+      
+      // Determine outcome based on probability
+      const success = Math.random() < selectedProbability
+      setOutcome(success)
+      setShowOutcome(true)
+
+      // Record trial data
+      addTrialData({
+        phase,
+        trialNumber: currentPairIndex + 1,
+        condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
+        stimulus: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
+        choice: pendingChoice.choiceIndex === 0 ? "left" : "right",
+        outcome: success,
+        points: success ? 100 : 0,
+      })
+
+      // Reset pending choice
+      setPendingChoice(null)
+
+      // Move to next trial or advance phase after delay
+      setTimeout(() => {
+        setShowOutcome(false)
+        setMessage(null)
+
+        if (currentPairIndex < choicePairs.length - 1) {
+          setIsLoading(true)
+          setTimeout(() => {
+            setCurrentPairIndex((prev) => prev + 1)
+            setIsLoading(false)
+          }, 3000)
+        } else {
+          setMessage("Moving to the next phase...")
+          setTimeout(() => {
+            onAdvance()
+          }, 1500)
+        }
+      }, 1000)
+    }
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance])
 
   const handleChoice = (choiceIndex: 0 | 1) => {
     if (showOutcome) return
-
-    const currentPair = probabilityPairs[currentPairIndex]
-    const selectedProbability = choiceIndex === 0 ? currentPair.p1 : currentPair.p2
-
-    // Determine outcome based on probability
-    const success = Math.random() < selectedProbability
-    setOutcome(success)
-    setShowOutcome(true)
-
-    // Record trial data
-    addTrialData({
-      phase,
-      trialNumber: currentPairIndex + 1,
-      condition: `final_probability_choice_p${currentPair.p1}_vs_p${currentPair.p2}`,
-      stimulus: choiceIndex === 0 ? "stimulus-a" : "stimulus-c",
-      choice: choiceIndex === 0 ? "left" : "right",
-      outcome: success,
-      points: success ? 100 : 0,
-    })
-
-    // Move to next trial or advance phase after delay
-    setTimeout(() => {
-      setShowOutcome(false)
-      setMessage(null)
-
-      if (currentPairIndex < probabilityPairs.length - 1) {
-        setCurrentPairIndex((prev) => prev + 1)
-      } else {
-        setMessage("Moving to the next phase...")
-        setTimeout(() => {
-          onAdvance()
-        }, 1500)
-      }
-    }, 1000)
+    setPendingChoice({ choiceIndex })
   }
 
-  const currentPair = probabilityPairs[currentPairIndex]
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <p className="text-xl font-bold">Next choice loading...</p>
+      </div>
+    )
+  }
+
+  const currentChoicePair = choicePairs[currentPairIndex]
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-center">Choice Trial</h1>
+      {/* <h1 className="text-2xl font-bold text-center">Choice Trial</h1> */}
 
       <div className="text-center mb-4">
-        <p>Which would you prefer?</p>
+        <p className="text-2xl font-medium">Which would you prefer?</p>
       </div>
 
       <div className="flex flex-col items-center justify-center space-y-4">
@@ -76,10 +115,10 @@ export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs
             >
               <div className="absolute inset-0 flex items-center justify-center">
                 <Image
-                  src="/images/stimulus-a.png"
-                  alt="Stimulus A"
-                  width={100}
-                  height={100}
+                  src={currentChoicePair.left.image}
+                  alt={`Stimulus ${currentChoicePair.left.stimulus}`}
+                  width={800}
+                  height={800}
                   className="object-contain"
                 />
               </div>
@@ -92,14 +131,22 @@ export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs
             >
               <div className="absolute inset-0 flex items-center justify-center">
                 <Image
-                  src="/images/stimulus-c.png"
-                  alt="Stimulus C"
-                  width={100}
-                  height={100}
+                  src={currentChoicePair.right.image}
+                  alt={`Stimulus ${currentChoicePair.right.stimulus}`}
+                  width={800}
+                  height={800}
                   className="object-contain"
                 />
               </div>
             </Button>
+          </div>
+        )}
+
+        {showOutcome && (
+          <div className="text-center">
+            <p className={`text-4xl font-bold ${outcome ? "text-green-600" : "text-red-600"}`}>
+              {outcome ? "✓" : "✗"}
+            </p>
           </div>
         )}
 
