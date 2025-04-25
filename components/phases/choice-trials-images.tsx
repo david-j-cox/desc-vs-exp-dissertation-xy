@@ -69,30 +69,35 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
       setPendingChoice(null)
 
       // Move to next trial or advance phase after delay
-      setTimeout(() => {
-        setShowOutcome(false)
-        setMessage(null)
-
-        if (currentPairIndex < choicePairs.length - 1) {
+      if (currentPairIndex < choicePairs.length - 1) {
+        setTimeout(() => {
+          setShowOutcome(false)
+          setMessage(null)
           setIsLoading(true)
           setTimeout(() => {
             setCurrentPairIndex((prev) => prev + 1)
             setIsLoading(false)
           }, 3000)
-        } else {
-          // Check if all choices were correct
-          const allCorrect = correctChoices.every(choice => choice)
-          if (!allCorrect && typeof onFail === 'function') {
+        }, 1000)
+      } else {
+        // Check if all choices were correct
+        const allCorrect = correctChoices.every(choice => choice)
+        if (!allCorrect && typeof onFail === 'function') {
+          setTimeout(() => {
+            setShowOutcome(false)
+            setMessage(null)
             setIsLoading(true)
             setTimeout(() => {
               onFail()
             }, 1500)
-          } else {
-            // Immediately advance to the next phase without showing any message
-            onAdvance()
-          }
+          }, 1000)
+        } else {
+          // Immediately advance to the next phase without any delay
+          setShowOutcome(false)
+          setMessage(null)
+          onAdvance()
         }
-      }, 1000)
+      }
     }
   }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices])
 
@@ -113,9 +118,11 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-4">
-        <p className="text-2xl font-medium">Which would you prefer?</p>
-      </div>
+      {!showOutcome && (
+        <div className="text-center mb-4">
+          <p className="text-2xl font-medium">Which would you prefer?</p>
+        </div>
+      )}
 
       <div className="flex flex-col items-center justify-center space-y-4">
         {!showOutcome && (

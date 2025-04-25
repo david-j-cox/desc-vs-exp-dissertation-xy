@@ -33,7 +33,7 @@ export default function CompletionPage() {
     } else {
       // Clear the experiment data after upload
       localStorage.removeItem("experiment-data")
-      window.close()
+      window.location.href = "about:blank"
     }
   }, [countdown])
 

@@ -34,15 +34,12 @@ export default function FirstDescChoice({ onAdvance, addTrialData }: FirstDescCh
       points: 0,
     })
 
-    setTimeout(() => {
-      onAdvance()
-    }, 1500)
+    onAdvance()
   }
 
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-xl font-bold">Next condition loading...</p>
       </div>
     )
   }
