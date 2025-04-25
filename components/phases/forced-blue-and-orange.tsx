@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import type { ExperimentData } from "../experiment"
+import { useRouter } from "next/navigation"
 
 interface ForcedBlueAndOrangeProps {
   onAdvance: () => void
@@ -19,6 +20,7 @@ interface ButtonConfig {
 }
 
 export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperimentData, experimentData }: ForcedBlueAndOrangeProps) {
+  const router = useRouter()
   const buttons: ButtonConfig[] = [
     { id: "blue", color: "bg-blue-500", probability: 1.0, points: 50 },
     { id: "orange", color: "bg-orange-500", probability: 0.5, points: 100 },
@@ -75,8 +77,9 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
           setIsLoading(false)
         }, 3000)
       } else {
-        // All buttons completed
-        onAdvance()
+        // All trials completed, store final data and navigate to completion page
+        localStorage.setItem('experimentData', JSON.stringify(experimentData))
+        router.push('/completion')
       }
     }, 1500)
   }

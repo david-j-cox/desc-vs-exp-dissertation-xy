@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import OSFUploader from "../osf-uploader"
 import type { ExperimentData } from "../experiment"
 
@@ -19,6 +20,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [submitted, setSubmitted] = useState(false)
   const [experimentData, setExperimentData] = useState<ExperimentData | null>(null)
+  const router = useRouter()
 
   // Load experiment data for OSF upload
   useEffect(() => {
@@ -32,56 +34,107 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
     }
   }, [])
 
-  const handleSubmit = () => {
-    // Record survey responses with detailed data
-    const questions = [
-      { number: 1, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-a", type: "probability" as const },
-      { number: 2, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-b", type: "probability" as const },
-      { number: 3, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-c", type: "probability" as const },
-      { number: 4, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-d", type: "probability" as const },
-      { number: 5, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-a", type: "consistency" as const },
-      { number: 6, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-b", type: "consistency" as const },
-      { number: 7, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-c", type: "consistency" as const },
-      { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d", type: "consistency" as const },
-    ]
-
-    // First, add all survey responses to the trial data
-    questions.forEach((q, index) => {
-      const responseKey = index < 4 ? `q1B${index + 1}` : `q2B${index - 3}`
+  const handleNext = () => {
+    // Save the current question's response before moving to next
+    const currentResponse = getCurrentQuestionResponse()
+    if (currentResponse) {
       addTrialData({
         phase: "final-survey",
-        trialNumber: q.number,
-        condition: q.text,
-        stimulus: q.stimulus,
-        choice: responses[responseKey] || "",
-        questionType: q.type,
+        trialNumber: currentQuestion,
+        condition: currentResponse.text,
+        stimulus: currentResponse.stimulus,
+        choice: currentResponse.response,
+        outcome: undefined,
         points: 0,
       })
-    })
 
-    // Then, update the Prolific ID in localStorage
-    try {
-      const storedData = localStorage.getItem("experiment-data")
-      if (storedData) {
-        const data = JSON.parse(storedData)
-        data.participantId = responses.prolificId
-        // Add additional survey responses to the data
-        data.surveyResponses = {
-          ...responses,
-          timestamp: Date.now()
+      // Update localStorage
+      try {
+        const storedData = localStorage.getItem("experiment-data")
+        if (storedData) {
+          const data = JSON.parse(storedData)
+          if (!data.surveyResponses) {
+            data.surveyResponses = {}
+          }
+          
+          // Add the current response to surveyResponses
+          data.surveyResponses[currentResponse.key] = currentResponse.response
+          localStorage.setItem("experiment-data", JSON.stringify(data))
         }
-        localStorage.setItem("experiment-data", JSON.stringify(data))
-        // Update the local state to trigger OSF upload
-        setExperimentData(data)
+      } catch (error) {
+        console.error("Error updating experiment data:", error)
       }
-    } catch (error) {
-      console.error("Error updating experiment data:", error)
+    }
+    
+    setCurrentQuestion(prev => prev + 1)
+  }
+
+  const getCurrentQuestionResponse = () => {
+    const questions = [
+      { number: 1, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-a", key: "q1B1" },
+      { number: 2, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-b", key: "q1B2" },
+      { number: 3, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-c", key: "q1B3" },
+      { number: 4, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-d", key: "q1B4" },
+      { number: 5, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-a", key: "q2B1" },
+      { number: 6, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-b", key: "q2B2" },
+      { number: 7, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-c", key: "q2B3" },
+      { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d", key: "q2B4" },
+      { number: 9, text: "Which button do you think gives the BEST outcome?", stimulus: "all-images", key: "q3" },
+      { number: 10, text: "Which button do you think gives the WORST outcome?", stimulus: "all-images", key: "q4" },
+      { number: 11, text: "What strategy did you use to pick between these two buttons?", stimulus: "stimulus-a-b", key: "q5" },
+      { number: 12, text: "What strategy did you use to pick between these two buttons?", stimulus: "blue-orange", key: "q6" },
+      { number: 13, text: "Enter Your Prolific ID Here:", stimulus: "prolific", key: "prolificId" }
+    ]
+
+    const question = questions[currentQuestion - 1]
+    if (!question) return null
+
+    return {
+      ...question,
+      response: responses[question.key] || ""
+    }
+  }
+
+  const handleSubmit = () => {
+    // For the final question (Prolific ID)
+    const finalResponse = getCurrentQuestionResponse()
+    if (finalResponse) {
+      addTrialData({
+        phase: "final-survey",
+        trialNumber: currentQuestion,
+        condition: finalResponse.text,
+        stimulus: finalResponse.stimulus,
+        choice: finalResponse.response,
+        outcome: undefined,
+        points: 0,
+      })
+
+      try {
+        const storedData = localStorage.getItem("experiment-data")
+        if (storedData) {
+          const data = JSON.parse(storedData)
+          if (!data.surveyResponses) {
+            data.surveyResponses = {}
+          }
+          
+          // Add the Prolific ID
+          data.surveyResponses[finalResponse.key] = finalResponse.response
+          data.participantId = finalResponse.response
+          
+          // Add timestamp
+          data.surveyResponses.timestamp = Date.now()
+          
+          localStorage.setItem("experiment-data", JSON.stringify(data))
+          setExperimentData(data)
+        }
+      } catch (error) {
+        console.error("Error updating experiment data:", error)
+      }
     }
 
     setSubmitted(true)
-    // Only call onComplete after data is saved
     setTimeout(() => {
-      onComplete()
+      router.push("/completion")
     }, 1000)
   }
 
@@ -308,8 +361,6 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
                 onClick={() => {
                   if (responses.prolificId && responses.prolificId.trim()) {
                     handleSubmit()
-                    // Close the browser tab
-                    window.close()
                   }
                 }}
                 disabled={!responses.prolificId || !responses.prolificId.trim()}
@@ -350,12 +401,19 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               </Button>
               {currentQuestion < 13 ? (
                 <Button
-                  onClick={() => setCurrentQuestion(prev => prev + 1)}
+                  onClick={handleNext}
                 >
                   Next
                 </Button>
               ) : (
-                <Button onClick={handleSubmit}>
+                <Button 
+                  onClick={() => {
+                    if (responses.prolificId && responses.prolificId.trim()) {
+                      handleSubmit()
+                    }
+                  }}
+                  disabled={!responses.prolificId || !responses.prolificId.trim()}
+                >
                   Submit Survey
                 </Button>
               )}
