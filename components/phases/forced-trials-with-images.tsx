@@ -35,6 +35,7 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState<"success" | "failure">("success")
   const [isLoading, setIsLoading] = useState(false)
+  const [trialCount, setTrialCount] = useState(1) // Keep track of absolute trial number
 
   const TRIALS_PER_STIMULUS = 10
   const TOTAL_TRIALS = TRIALS_PER_STIMULUS * 4 // 4 stimuli, 10 trials each
@@ -47,14 +48,17 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
   ]
 
   const handleChoice = () => {
+    if (showOutcome || isLoading) return
+
     const currentStimulus = stimuli[currentStimulusIndex]
     const trialInBlock = currentTrial % TRIALS_PER_STIMULUS
     const isCorrect = TRIAL_OUTCOMES[currentStimulus.id][trialInBlock]
     const points = isCorrect ? currentStimulus.points : 0
 
+    // Record data with sequential trial number
     addTrialData({
       phase: "forced-trials-with-images",
-      trialNumber: currentTrial + 1,
+      trialNumber: trialCount,
       condition: "forced-trials-with-images",
       stimulus: currentStimulus.id,
       choice: currentStimulus.id,
@@ -64,6 +68,9 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
 
     setShowOutcome(true)
     setOutcome(isCorrect ? "success" : "failure")
+
+    // Increment trial count immediately after recording data
+    setTrialCount(prev => prev + 1)
 
     setTimeout(() => {
       setShowOutcome(false)

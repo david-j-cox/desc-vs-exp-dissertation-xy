@@ -26,6 +26,7 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
   const [correctChoices, setCorrectChoices] = useState<boolean[]>([])
+  const [trialCount, setTrialCount] = useState(1) // Keep track of absolute trial number
 
   const choicePairs: ChoicePair[] = [
     {
@@ -39,7 +40,7 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
   ]
 
   useEffect(() => {
-    if (pendingChoice !== null) {
+    if (pendingChoice !== null && !isLoading && !showOutcome) {
       const currentPair = probabilityPairs[0]
       const selectedProbability = pendingChoice.choiceIndex === 0 ? currentPair.p1 : currentPair.p2
       const choicePair = choicePairs[currentPairIndex]
@@ -54,16 +55,19 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
                             (currentPairIndex === 1 && pendingChoice.choiceIndex === 1)    // Should choose B over D
       setCorrectChoices(prev => [...prev, isCorrectChoice])
 
-      // Record trial data
+      // Record trial data with sequential trial number
       addTrialData({
         phase,
-        trialNumber: currentPairIndex + 1,
+        trialNumber: trialCount,
         condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
         stimulus: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         choice: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         outcome: success,
         points: success ? 100 : 0,
       })
+
+      // Increment trial count
+      setTrialCount(prev => prev + 1)
 
       // Reset pending choice
       setPendingChoice(null)
@@ -77,32 +81,29 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
           setTimeout(() => {
             setCurrentPairIndex((prev) => prev + 1)
             setIsLoading(false)
-          }, 3000)
+          }, 1000)
         }, 1000)
       } else {
         // Check if all choices were correct
-        const allCorrect = correctChoices.every(choice => choice)
-        if (!allCorrect && typeof onFail === 'function') {
-          setTimeout(() => {
-            setShowOutcome(false)
-            setMessage(null)
+        setTimeout(() => {
+          setShowOutcome(false)
+          setMessage(null)
+          const allCorrect = correctChoices.every(choice => choice)
+          if (!allCorrect && typeof onFail === 'function') {
             setIsLoading(true)
             setTimeout(() => {
               onFail()
-            }, 1500)
-          }, 1000)
-        } else {
-          // Immediately advance to the next phase without any delay
-          setShowOutcome(false)
-          setMessage(null)
-          onAdvance()
-        }
+            }, 500)
+          } else {
+            onAdvance()
+          }
+        }, 1000)
       }
     }
-  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices])
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading, showOutcome, trialCount])
 
   const handleChoice = (choiceIndex: 0 | 1) => {
-    if (showOutcome) return
+    if (showOutcome || isLoading) return
     setPendingChoice({ choiceIndex })
   }
 
@@ -114,55 +115,62 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
     )
   }
 
-  const currentChoicePair = choicePairs[currentPairIndex]
-
   return (
     <div className="space-y-6">
-      {!showOutcome && (
-        <div className="text-center mb-4">
-          <p className="text-2xl font-medium">Which would you prefer?</p>
+      {showOutcome ? (
+        <div className="text-center">
+          <p className={`text-4xl font-bold ${outcome ? "text-green-600" : "text-red-600"}`}>
+            {outcome ? "✓" : "✗"}
+          </p>
+          <p className="text-xl mt-2">
+            {outcome ? "100 Points Earned" : "No Points Earned"}
+          </p>
         </div>
+      ) : (
+        <>
+          <div className="text-center mb-4">
+            <p className="text-2xl font-medium">Which would you prefer?</p>
+          </div>
+
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className="flex space-x-8">
+              <Button
+                className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
+                onClick={() => handleChoice(0)}
+                disabled={showOutcome || isLoading}
+              >
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Image
+                    src={choicePairs[currentPairIndex].left.image}
+                    alt={`Stimulus ${choicePairs[currentPairIndex].left.stimulus}`}
+                    width={256}
+                    height={256}
+                    className="w-64 h-64 object-contain"
+                  />
+                </div>
+              </Button>
+
+              <Button
+                className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
+                onClick={() => handleChoice(1)}
+                disabled={showOutcome || isLoading}
+              >
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Image
+                    src={choicePairs[currentPairIndex].right.image}
+                    alt={`Stimulus ${choicePairs[currentPairIndex].right.stimulus}`}
+                    width={256}
+                    height={256}
+                    className="w-64 h-64 object-contain"
+                  />
+                </div>
+              </Button>
+            </div>
+          </div>
+        </>
       )}
 
-      <div className="flex flex-col items-center justify-center space-y-4">
-        {!showOutcome && (
-          <div className="flex space-x-8">
-            <Button
-              className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
-              onClick={() => handleChoice(0)}
-              disabled={showOutcome}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Image
-                  src={currentChoicePair.left.image}
-                  alt={`Stimulus ${currentChoicePair.left.stimulus}`}
-                  width={256}
-                  height={256}
-                  className="w-64 h-64 object-contain"
-                />
-              </div>
-            </Button>
-
-            <Button
-              className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
-              onClick={() => handleChoice(1)}
-              disabled={showOutcome}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Image
-                  src={currentChoicePair.right.image}
-                  alt={`Stimulus ${currentChoicePair.right.stimulus}`}
-                  width={256}
-                  height={256}
-                  className="w-64 h-64 object-contain"
-                />
-              </div>
-            </Button>
-          </div>
-        )}
-
-        {message && <p className="text-lg">{message}</p>}
-      </div>
+      {message && <p className="text-lg">{message}</p>}
     </div>
   )
 } 

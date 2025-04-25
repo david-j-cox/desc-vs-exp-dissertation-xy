@@ -32,27 +32,22 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
       points,
     })
 
+    setShowOutcome(true)
+    setOutcome(success ? "success" : "failure")
     if (success) {
-      setShowOutcome(true)
-      setOutcome("success")
       setPoints(points)
-      setTimeout(() => {
-        setShowOutcome(false)
-        setButtonOrder(Math.random() < 0.5 ? "blue-orange" : "orange-blue")
-        if (currentTrial < 40) {
-          setCurrentTrial(currentTrial + 1)
-        } else {
-          onAdvance()
-        }
-      }, 2000)
-    } else {
-      setShowOutcome(true)
-      setOutcome("failure")
-      setTimeout(() => {
-        setShowOutcome(false)
-        setButtonOrder(Math.random() < 0.5 ? "blue-orange" : "orange-blue")
-      }, 2000)
     }
+
+    setTimeout(() => {
+      setShowOutcome(false)
+      setButtonOrder(Math.random() < 0.5 ? "blue-orange" : "orange-blue")
+      
+      if (currentTrial < 40) {
+        setCurrentTrial(prev => prev + 1)
+      } else {
+        onAdvance()
+      }
+    }, 2000)
   }
 
   return (

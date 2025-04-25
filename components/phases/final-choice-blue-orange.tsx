@@ -15,11 +15,16 @@ export default function FinalChoiceBlueOrange({
   addTrialData,
   trialNumber = 1 
 }: FinalChoiceBlueOrangeProps) {
+  const [isLoading, setIsLoading] = useState(false)
+
   const handleChoice = (choice: string) => {
+    if (isLoading) return
+
     const isBlue = choice === "blue"
     const success = isBlue ? true : Math.random() < 0.5
     const points = isBlue ? 50 : (success ? 100 : 0)
     
+    // Record trial data
     addTrialData({
       phase: "final-choice-blue-orange",
       trialNumber: 1,
@@ -30,7 +35,18 @@ export default function FinalChoiceBlueOrange({
       points,
     })
 
-    onAdvance()
+    // Set loading state and advance after a short delay
+    setIsLoading(true)
+    setTimeout(() => {
+      onAdvance()
+    }, 500)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+      </div>
+    )
   }
 
   return (
@@ -41,11 +57,13 @@ export default function FinalChoiceBlueOrange({
           <Button
             className="w-64 h-64 bg-blue-500 text-white text-2xl hover:bg-blue-500"
             onClick={() => handleChoice("blue")}
+            disabled={isLoading}
           >
           </Button>
           <Button
             className="w-64 h-64 bg-orange-500 text-white text-2xl hover:bg-orange-500"
             onClick={() => handleChoice("orange")}
+            disabled={isLoading}
           >
           </Button>
         </div>

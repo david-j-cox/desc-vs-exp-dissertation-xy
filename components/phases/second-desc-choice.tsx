@@ -41,10 +41,12 @@ export default function SecondDescChoice({
       points: 0,
     })
 
-    // Set loading state after recording data
+    // Set loading state and advance after a short delay
     setPendingChoice({ choiceIndex })
     setIsLoading(true)
-    onAdvance()
+    setTimeout(() => {
+      onAdvance()
+    }, 500)
   }
 
   if (isLoading) {

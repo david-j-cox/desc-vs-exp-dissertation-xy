@@ -109,17 +109,22 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
   }
 
   const addTrialData = (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => {
-    setExperimentData((prev) => ({
-      ...prev,
-      trials: [
-        ...prev.trials,
-        {
-          ...trialData,
-          timestamp: Date.now(),
-        },
-      ],
-      totalPoints: prev.totalPoints + (trialData.points || 0),
-    }))
+    console.log("Adding trial data:", trialData)
+    setExperimentData((prev) => {
+      const newData = {
+        ...prev,
+        trials: [
+          ...prev.trials,
+          {
+            ...trialData,
+            timestamp: Date.now(),
+          },
+        ],
+        totalPoints: prev.totalPoints + (trialData.points || 0),
+      }
+      console.log("Updated experiment data:", newData)
+      return newData
+    })
   }
 
   useEffect(() => {
