@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import type { ExperimentData } from "../experiment"
 
-interface ChoiceTrialsProps {
+interface ChoiceTrialsImagesProps {
   onAdvance: () => void
   addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
   probabilityPairs: { p1: number; p2: number }[]
@@ -18,7 +18,7 @@ type ChoicePair = {
   right: { stimulus: string; image: string }
 }
 
-export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs, phase, onFail }: ChoiceTrialsProps) {
+export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail }: ChoiceTrialsImagesProps) {
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState(false)
@@ -116,8 +116,6 @@ export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs
 
   return (
     <div className="space-y-6">
-      {/* <h1 className="text-2xl font-bold text-center">Choice Trial</h1> */}
-
       <div className="text-center mb-4">
         <p className="text-2xl font-medium">Which would you prefer?</p>
       </div>
@@ -171,4 +169,4 @@ export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs
       </div>
     </div>
   )
-}
+} 

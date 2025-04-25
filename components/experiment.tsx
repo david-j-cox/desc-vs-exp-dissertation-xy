@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import ConsentPage from "./phases/consent-page"
 import InstructionsPage from "./phases/instructions-page"
 import ForcedTrialsWithImages from "./phases/forced-trials-with-images"
-import ChoiceTrials from "./phases/choice-trials"
+import ChoiceTrialsImages from "./phases/choice-trials-images"
 import ForcedBlueAndOrange from "./phases/forced-blue-and-orange"
 import BlueOrangeTrials from "./phases/blue-orange-trials"
 import FinalSurvey from "./phases/final-survey"
@@ -155,12 +155,12 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       {currentPhase === "forced-trials-with-images-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
       {currentPhase === "choice-trials" && (
-        <ChoiceTrials
+        <ChoiceTrialsImages
           onAdvance={advancePhase}
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
-          phase="choice-trials"
-          onFail={repeatPhase2}
+          phase={currentPhase}
+          onFail={() => setCurrentPhase("forced-trials-with-images")}
         />
       )}
 
