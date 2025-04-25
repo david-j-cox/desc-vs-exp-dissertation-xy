@@ -1,11 +1,7 @@
-import type { Metadata } from 'next'
-import './globals.css'
+"use client"
 
-export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
-}
+import './globals.css'
+import { ThemeProvider } from '@/components/theme-provider'
 
 export default function RootLayout({
   children,
@@ -13,9 +9,21 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-background font-sans antialiased">
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body className="min-h-screen bg-white dark:bg-gray-900">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <div className="min-h-screen flex flex-col">
+            <main className="flex-1 w-full max-w-6xl mx-auto">
+              {children}
+            </main>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -9,8 +9,8 @@ export default function Home() {
   const [isComplete, setIsComplete] = useState(false)
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
-      <div className="w-full max-w-4xl mx-auto">
+    <div className="flex min-h-screen flex-col items-center justify-center p-6">
+      <div className="w-full max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         {isComplete && (
           <div className="mb-6 flex justify-end items-center">
             <Link href="/data">
@@ -20,6 +20,6 @@ export default function Home() {
         )}
         <Experiment onComplete={() => setIsComplete(true)} />
       </div>
-    </main>
+    </div>
   )
 }

@@ -34,12 +34,25 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
 
   const handleSubmit = () => {
     // Record survey responses
-    Object.entries(responses).forEach(([question, answer]) => {
+    const questions = [
+      { number: 1, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-a" },
+      { number: 2, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-b" },
+      { number: 3, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-c" },
+      { number: 4, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-d" },
+      { number: 5, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-a" },
+      { number: 6, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-b" },
+      { number: 7, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-c" },
+      { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d" },
+    ]
+
+    questions.forEach((q, index) => {
+      const responseKey = index < 4 ? `q1B${index + 1}` : `q2B${index - 3}`
       addTrialData({
         phase: "final-survey",
-        trialNumber: 1,
-        condition: "survey",
-        choice: answer,
+        trialNumber: q.number,
+        condition: q.text,
+        stimulus: q.stimulus,
+        choice: responses[responseKey] || "",
         points: 0,
       })
     })

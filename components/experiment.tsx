@@ -4,12 +4,14 @@ import { useState, useEffect } from "react"
 import ConsentPage from "./phases/consent-page"
 import InstructionsPage from "./phases/instructions-page"
 import ForcedTrialsWithImages from "./phases/forced-trials-with-images"
-import ChoiceTrials from "./phases/choice-trials"
+import ChoiceTrialsImages from "./phases/choice-trials-images"
 import ForcedBlueAndOrange from "./phases/forced-blue-and-orange"
 import BlueOrangeTrials from "./phases/blue-orange-trials"
-import SingleChoice from "./phases/single-choice"
 import FinalSurvey from "./phases/final-survey"
 import InterConditionInterval from "./phases/inter-condition-interval"
+import FirstDescChoice from "./phases/first-desc-choice"
+import FinalChoiceBlueOrange from "./phases/final-choice-blue-orange"
+import SecondDescChoice from "./phases/second-desc-choice"
 import { useLocalStorage } from "@/hooks/use-local-storage"
 
 export type Phase = 
@@ -19,11 +21,15 @@ export type Phase =
   | "forced-trials-with-images-interval"
   | "choice-trials"
   | "choice-trials-interval"
+  | "first-desc-choice"
+  | "first-desc-choice-interval"
   | "forced-blue-and-orange"
   | "forced-blue-and-orange-interval"
   | "blue-orange-trials"
   | "blue-orange-trials-interval"
-  | "single-choice"
+  | "final-choice-blue-orange"
+  | "second-desc-choice"
+  | "second-desc-choice-interval"
   | "final-choice-trials"
   | "final-survey"
 
@@ -45,13 +51,22 @@ export type ExperimentData = {
 
 export default function Experiment({ onComplete }: { onComplete?: () => void }) {
   const [experimentData, setExperimentData] = useLocalStorage<ExperimentData>("experiment-data", {
-    participantId: Math.random().toString(36).substring(2, 15),
+    participantId: "",
     currentPhase: "consent",
     trials: [],
     totalPoints: 0,
   })
 
   const [currentPhase, setCurrentPhase] = useState<Phase>(() => experimentData.currentPhase)
+
+  useEffect(() => {
+    if (!experimentData.participantId) {
+      setExperimentData(prev => ({
+        ...prev,
+        participantId: Math.random().toString(36).substring(2, 15)
+      }))
+    }
+  }, [])
 
   const updatePhase = (newPhase: Phase) => {
     setCurrentPhase(newPhase)
@@ -70,11 +85,15 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       "forced-trials-with-images-interval",
       "choice-trials",
       "choice-trials-interval",
+      "first-desc-choice",
+      "first-desc-choice-interval",
       "forced-blue-and-orange",
       "forced-blue-and-orange-interval",
       "blue-orange-trials",
       "blue-orange-trials-interval",
-      "single-choice",
+      "final-choice-blue-orange",
+      "second-desc-choice",
+      "second-desc-choice-interval",
       "final-choice-trials",
       "final-survey"
     ]
@@ -112,10 +131,8 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
     <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
       {/* Only show Total Points during specific phases */}
       {(currentPhase === "forced-trials-with-images" || 
-        currentPhase === "choice-trials" || 
         currentPhase === "forced-blue-and-orange" || 
-        currentPhase === "blue-orange-trials" || 
-        currentPhase === "single-choice") && (
+        currentPhase === "blue-orange-trials") && (
         <div className="mb-4 text-center">
           <p className="text-4xl font-bold text-black-900">Total Points: {experimentData.totalPoints}</p>
         </div>
@@ -126,24 +143,45 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       {currentPhase === "instructions" && <InstructionsPage onAdvance={advancePhase} />}
 
       {currentPhase === "forced-trials-with-images" && (
-        <ForcedTrialsWithImages onAdvance={advancePhase} addTrialData={addTrialData} onFail={repeatPhase2} />
+        <ForcedTrialsWithImages 
+          onAdvance={advancePhase} 
+          addTrialData={addTrialData} 
+          onFail={repeatPhase2}
+          setExperimentData={setExperimentData}
+          experimentData={experimentData}
+        />
       )}
 
       {currentPhase === "forced-trials-with-images-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
       {currentPhase === "choice-trials" && (
-        <ChoiceTrials
+        <ChoiceTrialsImages
           onAdvance={advancePhase}
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
-          phase="choice-trials"
+          phase={currentPhase}
+          onFail={() => setCurrentPhase("forced-trials-with-images")}
         />
       )}
 
       {currentPhase === "choice-trials-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
+      {currentPhase === "first-desc-choice" && (
+        <FirstDescChoice
+          onAdvance={advancePhase}
+          addTrialData={addTrialData}
+        />
+      )}
+
+      {currentPhase === "first-desc-choice-interval" && <InterConditionInterval onComplete={advancePhase} />}
+
       {currentPhase === "forced-blue-and-orange" && (
-        <ForcedBlueAndOrange onAdvance={advancePhase} addTrialData={addTrialData} />
+        <ForcedBlueAndOrange 
+          onAdvance={advancePhase} 
+          addTrialData={addTrialData}
+          setExperimentData={setExperimentData}
+          experimentData={experimentData}
+        />
       )}
 
       {currentPhase === "forced-blue-and-orange-interval" && <InterConditionInterval onComplete={advancePhase} />}
@@ -152,23 +190,28 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
 
       {currentPhase === "blue-orange-trials-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === "single-choice" && <SingleChoice onAdvance={advancePhase} addTrialData={addTrialData} />}
-
-      {currentPhase === "final-choice-trials" && (
-        <ChoiceTrials
+      {currentPhase === "final-choice-blue-orange" && (
+        <FinalChoiceBlueOrange
           onAdvance={advancePhase}
           addTrialData={addTrialData}
-          probabilityPairs={[{ p1: 1, p2: 0.5 }]}
-          phase="final-choice-trials"
         />
       )}
+
+      {currentPhase === "second-desc-choice" && (
+        <SecondDescChoice
+          onAdvance={advancePhase}
+          addTrialData={addTrialData}
+        />
+      )}
+
+      {currentPhase === "second-desc-choice-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
       {currentPhase === "final-survey" && (
         <FinalSurvey
           onComplete={() => {
             alert("Experiment completed! Thank you for your participation.")
             setExperimentData({
-              participantId: Math.random().toString(36).substring(2, 15),
+              participantId: "",
               currentPhase: "consent",
               trials: [],
               totalPoints: 0,
