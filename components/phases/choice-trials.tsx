@@ -10,6 +10,7 @@ interface ChoiceTrialsProps {
   addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
   probabilityPairs: { p1: number; p2: number }[]
   phase: ExperimentData["currentPhase"]
+  onFail?: (() => void) | undefined
 }
 
 type ChoicePair = {
@@ -17,13 +18,14 @@ type ChoicePair = {
   right: { stimulus: string; image: string }
 }
 
-export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs, phase }: ChoiceTrialsProps) {
+export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs, phase, onFail }: ChoiceTrialsProps) {
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
+  const [correctChoices, setCorrectChoices] = useState<boolean[]>([])
 
   const choicePairs: ChoicePair[] = [
     {
@@ -31,8 +33,8 @@ export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs
       right: { stimulus: "stimulus-c", image: "/images/stimulus-c.png" }
     },
     {
-      left: { stimulus: "stimulus-b", image: "/images/stimulus-b.png" },
-      right: { stimulus: "stimulus-d", image: "/images/stimulus-d.png" }
+      left: { stimulus: "stimulus-d", image: "/images/stimulus-d.png" },
+      right: { stimulus: "stimulus-b", image: "/images/stimulus-b.png" }
     }
   ]
 
@@ -46,6 +48,11 @@ export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs
       const success = Math.random() < selectedProbability
       setOutcome(success)
       setShowOutcome(true)
+
+      // Check if the choice was correct
+      const isCorrectChoice = (currentPairIndex === 0 && pendingChoice.choiceIndex === 0) || // Should choose A over C
+                            (currentPairIndex === 1 && pendingChoice.choiceIndex === 1)    // Should choose B over D
+      setCorrectChoices(prev => [...prev, isCorrectChoice])
 
       // Record trial data
       addTrialData({
@@ -73,14 +80,24 @@ export default function ChoiceTrials({ onAdvance, addTrialData, probabilityPairs
             setIsLoading(false)
           }, 3000)
         } else {
-          setMessage("Moving to the next phase...")
-          setTimeout(() => {
-            onAdvance()
-          }, 1500)
+          // Check if all choices were correct
+          const allCorrect = correctChoices.every(choice => choice)
+          if (!allCorrect && typeof onFail === 'function') {
+            setIsLoading(true)
+            setTimeout(() => {
+              onFail()
+            }, 1500)
+          } else {
+            setIsLoading(true)
+            setMessage("Moving to the next phase...")
+            setTimeout(() => {
+              onAdvance()
+            }, 1500)
+          }
         }
       }, 1000)
     }
-  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance])
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices])
 
   const handleChoice = (choiceIndex: 0 | 1) => {
     if (showOutcome) return

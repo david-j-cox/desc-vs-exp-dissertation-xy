@@ -9,6 +9,8 @@ interface ForcedTrialsWithImagesProps {
   onAdvance: () => void
   addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
   onFail: () => void
+  setExperimentData: (data: ExperimentData) => void
+  experimentData: ExperimentData
 }
 
 interface Stimulus {
@@ -19,7 +21,7 @@ interface Stimulus {
   imageUrl: string
 }
 
-export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail }: ForcedTrialsWithImagesProps) {
+export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail, setExperimentData, experimentData }: ForcedTrialsWithImagesProps) {
   const [currentTrial, setCurrentTrial] = useState(0)
   const [currentStimulusIndex, setCurrentStimulusIndex] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
@@ -32,7 +34,7 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
   const stimuli: Stimulus[] = [
     { id: "A", probability: 1, color: "bg-red-500", points: 50, imageUrl: "/images/stimulus-a.png" },
     { id: "B", probability: 0.5, color: "bg-blue-500", points: 100, imageUrl: "/images/stimulus-b.png" },
-    { id: "C", probability: 0.85, color: "bg-green-500", points: 100, imageUrl: "/images/stimulus-c.png" },
+    { id: "C", probability: 0.3, color: "bg-green-500", points: 100, imageUrl: "/images/stimulus-c.png" },
     { id: "D", probability: 0.1, color: "bg-purple-500", points: 100, imageUrl: "/images/stimulus-d.png" },
   ]
 
@@ -64,6 +66,11 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
           setTimeout(() => {
             setCurrentStimulusIndex(prev => prev + 1)
             setCurrentTrial(nextTrial)
+            // Reset total points when moving to a new stimulus
+            setExperimentData({
+              ...experimentData,
+              totalPoints: 0
+            })
             setIsLoading(false)
           }, 3000)
         } else {
@@ -93,12 +100,12 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
           <p className={`text-4xl font-bold ${outcome === "success" ? "text-green-600" : "text-red-600"}`}>
             {outcome === "success" ? "✓" : "✗"}
           </p>
+          <p className="text-xl mt-2">
+            {outcome === "success" ? `${currentStimulus.points} Points Earned` : "No Points Earned"}
+          </p>
         </div>
       ) : (
         <div className="flex flex-col items-center space-y-4">
-          {/* <p className="text-xl font-bold">
-            Block {currentStimulusIndex + 1} of 4: Trial {trialsInCurrentBlock} of {TRIALS_PER_STIMULUS}
-          </p> */}
           <div 
             className="relative w-64 h-64 mb-4 cursor-pointer transition-transform hover:scale-105"
             onClick={handleChoice}
@@ -111,7 +118,6 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
               priority
             />
           </div>
-          {/* <p className="text-sm text-gray-500">Click the image to make your choice</p> */}
         </div>
       )}
     </div>
