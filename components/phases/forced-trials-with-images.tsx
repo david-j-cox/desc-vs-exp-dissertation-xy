@@ -25,7 +25,7 @@ interface Stimulus {
 const TRIAL_OUTCOMES: Record<string, boolean[]> = {
   A: [true, true, true, true, true, true, true, true, true, true], // 10 trials, all true
   B: [true, false, false, true, true, false, true, false, true, false], // 10 trials, alternating
-  C: [true, false, false, true, false, false, false, true, false, true], // 10 trials, 4 true
+  C: [true, false, false, true, false, false, false, true, false, false], // 10 trials, 3 true
   D: [false, false, false, false, false, true, false, false, false, false], // 10 trials, 1 true
 }
 

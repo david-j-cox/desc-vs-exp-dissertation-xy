@@ -28,9 +28,9 @@ export type Phase =
   | "blue-orange-trials"
   | "blue-orange-trials-interval"
   | "final-choice-blue-orange"
+  | "final-choice-blue-orange-interval"
   | "second-desc-choice"
   | "second-desc-choice-interval"
-  | "final-choice-trials"
   | "final-survey"
 
 export type ExperimentData = {
@@ -93,9 +93,9 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       "blue-orange-trials",
       "blue-orange-trials-interval",
       "final-choice-blue-orange",
+      "final-choice-blue-orange-interval",
       "second-desc-choice",
       "second-desc-choice-interval",
-      "final-choice-trials",
       "final-survey"
     ]
     const currentIndex = phases.indexOf(currentPhase)
@@ -197,6 +197,8 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           addTrialData={addTrialData}
         />
       )}
+
+      {currentPhase === "final-choice-blue-orange-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
       {currentPhase === "second-desc-choice" && (
         <SecondDescChoice

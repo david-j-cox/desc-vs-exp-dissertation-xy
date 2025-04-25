@@ -39,7 +39,7 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
       setTimeout(() => {
         setShowOutcome(false)
         setButtonOrder(Math.random() < 0.5 ? "blue-orange" : "orange-blue")
-        if (currentTrial < 9) {
+        if (currentTrial < 40) {
           setCurrentTrial(currentTrial + 1)
         } else {
           onAdvance()
@@ -75,7 +75,7 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
               className={`w-64 h-64 text-2xl bg-blue-500 text-white hover:bg-blue-500`}
               onClick={() => handleChoice("blue")}
             >
-              Blue
+              
             </Button>
             <Button
               variant="outline"
@@ -83,7 +83,7 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
               className={`w-64 h-64 text-2xl bg-orange-500 text-white hover:bg-orange-500`}
               onClick={() => handleChoice("orange")}
             >
-              Orange
+              
             </Button>
           </div>
         </div>

@@ -88,11 +88,8 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
               onFail()
             }, 1500)
           } else {
-            setIsLoading(true)
-            setMessage("Moving to the next phase...")
-            setTimeout(() => {
-              onAdvance()
-            }, 1500)
+            // Immediately advance to the next phase without showing any message
+            onAdvance()
           }
         }
       }, 1000)
@@ -154,14 +151,6 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
                 />
               </div>
             </Button>
-          </div>
-        )}
-
-        {showOutcome && (
-          <div className="text-center">
-            <p className={`text-4xl font-bold ${outcome ? "text-green-600" : "text-red-600"}`}>
-              {outcome ? "✓" : "✗"}
-            </p>
           </div>
         )}
 

@@ -96,13 +96,13 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
       <div className="flex flex-col items-center justify-center space-y-4">
         {!showOutcome ? (
           <Button
-            className={`w-32 h-32 ${currentButton.color} text-white text-2xl`}
+            className={`w-64 h-64 ${currentButton.color} text-white text-2xl hover:bg-currentButton.color`}
             onClick={handleButtonClick}
             disabled={showOutcome}
           >
           </Button>
         ) : (
-          <div className="text-center w-32 h-32 flex flex-col items-center justify-center">
+          <div className="text-center w-64 h-64 flex flex-col items-center justify-center">
             <p className={`text-4xl font-bold ${outcome ? "text-green-600" : "text-red-600"}`}>
               {outcome ? "✓" : "✗"}
             </p>

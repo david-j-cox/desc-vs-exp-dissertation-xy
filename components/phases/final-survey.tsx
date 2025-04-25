@@ -212,10 +212,10 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center gap-4 mb-4">
-              <Image src="/images/stimulus-a.png" alt="Button 1" width={100} height={100} />
-              <Image src="/images/stimulus-b.png" alt="Button 2" width={100} height={100} />
-              <Image src="/images/stimulus-c.png" alt="Button 3" width={100} height={100} />
-              <Image src="/images/stimulus-d.png" alt="Button 4" width={100} height={100} />
+              <Image src="/images/stimulus-a.png" alt="Button 1" width={200} height={200} />
+              <Image src="/images/stimulus-b.png" alt="Button 2" width={200} height={200} />
+              <Image src="/images/stimulus-c.png" alt="Button 3" width={200} height={200} />
+              <Image src="/images/stimulus-d.png" alt="Button 4" width={200} height={200} />
             </div>
             <label className="block font-medium text-center">
               Which button do you think gives the BEST outcome? (Button 1, Button 2, Button 3, Button 4)
@@ -231,10 +231,10 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center gap-4 mb-4">
-              <Image src="/images/stimulus-a.png" alt="Button 1" width={100} height={100} />
-              <Image src="/images/stimulus-b.png" alt="Button 2" width={100} height={100} />
-              <Image src="/images/stimulus-c.png" alt="Button 3" width={100} height={100} />
-              <Image src="/images/stimulus-d.png" alt="Button 4" width={100} height={100} />
+              <Image src="/images/stimulus-a.png" alt="Button 1" width={200} height={200} />
+              <Image src="/images/stimulus-b.png" alt="Button 2" width={200} height={200} />
+              <Image src="/images/stimulus-c.png" alt="Button 3" width={200} height={200} />
+              <Image src="/images/stimulus-d.png" alt="Button 4" width={200} height={200} />
             </div>
             <label className="block font-medium text-center">
               Which button do you think gives the WORST outcome? (Button 1, Button 2, Button 3, Button 4)
@@ -250,8 +250,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center gap-4 mb-4">
-              <Image src="/images/stimulus-a.png" alt="Button 1" width={100} height={100} />
-              <Image src="/images/stimulus-b.png" alt="Button 2" width={100} height={100} />
+              <Image src="/images/stimulus-a.png" alt="Button 1" width={200} height={200} />
+              <Image src="/images/stimulus-b.png" alt="Button 2" width={200} height={200} />
             </div>
             <label className="block font-medium text-center">
               What strategy did you use to pick between these two buttons?
