@@ -30,7 +30,7 @@ export default function FirstDescChoice({ onAdvance, addTrialData }: FirstDescCh
       trialNumber: 1,
       condition: "choice_a_vs_b",
       stimulus: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
-      choice: choiceIndex === 0 ? "left" : "right",
+      choice: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
       points: 0,
     })
 

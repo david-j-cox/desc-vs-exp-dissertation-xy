@@ -60,7 +60,7 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
         trialNumber: currentPairIndex + 1,
         condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
         stimulus: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
-        choice: pendingChoice.choiceIndex === 0 ? "left" : "right",
+        choice: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         outcome: success,
         points: success ? 100 : 0,
       })

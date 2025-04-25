@@ -16,9 +16,9 @@ export default function FinalChoiceBlueOrange({ onAdvance, addTrialData }: Final
     const points = isBlue ? 50 : (success ? 100 : 0)
     
     addTrialData({
-      phase: "single-choice",
+      phase: "final-choice-blue-orange",
       trialNumber: 1,
-      condition: "single",
+      condition: "final-choice-blue-orange",
       choice,
       outcome: success,
       points,
