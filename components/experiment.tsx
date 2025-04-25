@@ -7,10 +7,11 @@ import ForcedTrialsWithImages from "./phases/forced-trials-with-images"
 import ChoiceTrials from "./phases/choice-trials"
 import ForcedBlueAndOrange from "./phases/forced-blue-and-orange"
 import BlueOrangeTrials from "./phases/blue-orange-trials"
-import SingleChoice from "./phases/single-choice"
 import FinalSurvey from "./phases/final-survey"
 import InterConditionInterval from "./phases/inter-condition-interval"
 import FirstDescChoice from "./phases/first-desc-choice"
+import FinalChoiceBlueOrange from "./phases/final-choice-blue-orange"
+import SecondDescChoice from "./phases/second-desc-choice"
 import { useLocalStorage } from "@/hooks/use-local-storage"
 
 export type Phase = 
@@ -26,7 +27,9 @@ export type Phase =
   | "forced-blue-and-orange-interval"
   | "blue-orange-trials"
   | "blue-orange-trials-interval"
-  | "single-choice"
+  | "final-choice-blue-orange"
+  | "second-desc-choice"
+  | "second-desc-choice-interval"
   | "final-choice-trials"
   | "final-survey"
 
@@ -88,7 +91,9 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       "forced-blue-and-orange-interval",
       "blue-orange-trials",
       "blue-orange-trials-interval",
-      "single-choice",
+      "final-choice-blue-orange",
+      "second-desc-choice",
+      "second-desc-choice-interval",
       "final-choice-trials",
       "final-survey"
     ]
@@ -127,8 +132,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       {/* Only show Total Points during specific phases */}
       {(currentPhase === "forced-trials-with-images" || 
         currentPhase === "forced-blue-and-orange" || 
-        currentPhase === "blue-orange-trials" || 
-        currentPhase === "single-choice") && (
+        currentPhase === "blue-orange-trials") && (
         <div className="mb-4 text-center">
           <p className="text-4xl font-bold text-black-900">Total Points: {experimentData.totalPoints}</p>
         </div>
@@ -186,16 +190,21 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
 
       {currentPhase === "blue-orange-trials-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === "single-choice" && <SingleChoice onAdvance={advancePhase} addTrialData={addTrialData} />}
-
-      {currentPhase === "final-choice-trials" && (
-        <ChoiceTrials
+      {currentPhase === "final-choice-blue-orange" && (
+        <FinalChoiceBlueOrange
           onAdvance={advancePhase}
           addTrialData={addTrialData}
-          probabilityPairs={[{ p1: 1, p2: 0.5 }]}
-          phase="final-choice-trials"
         />
       )}
+
+      {currentPhase === "second-desc-choice" && (
+        <SecondDescChoice
+          onAdvance={advancePhase}
+          addTrialData={addTrialData}
+        />
+      )}
+
+      {currentPhase === "second-desc-choice-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
       {currentPhase === "final-survey" && (
         <FinalSurvey
