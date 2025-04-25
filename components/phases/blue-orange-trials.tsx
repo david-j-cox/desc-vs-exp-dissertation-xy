@@ -26,8 +26,8 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
     addTrialData({
       phase: "blue-orange-trials",
       trialNumber: currentTrial + 1,
-      condition: "choice",
-      choice,
+      condition: "blue-orange-trials",
+      choice: choice,
       outcome: success,
       points,
     })

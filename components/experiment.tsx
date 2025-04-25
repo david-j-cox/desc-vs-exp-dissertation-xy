@@ -19,8 +19,8 @@ export type Phase =
   | "instructions"
   | "forced-trials-with-images"
   | "forced-trials-with-images-interval"
-  | "choice-trials"
-  | "choice-trials-interval"
+  | "choice-trials-images"
+  | "choice-trials-images-interval"
   | "first-desc-choice"
   | "first-desc-choice-interval"
   | "forced-blue-and-orange"
@@ -84,8 +84,8 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       "instructions",
       "forced-trials-with-images",
       "forced-trials-with-images-interval",
-      "choice-trials",
-      "choice-trials-interval",
+      "choice-trials-images",
+      "choice-trials-images-interval",
       "first-desc-choice",
       "first-desc-choice-interval",
       "forced-blue-and-orange",
@@ -155,7 +155,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
 
       {currentPhase === "forced-trials-with-images-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === "choice-trials" && (
+      {currentPhase === "choice-trials-images" && (
         <ChoiceTrialsImages
           onAdvance={advancePhase}
           addTrialData={addTrialData}
@@ -165,7 +165,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
         />
       )}
 
-      {currentPhase === "choice-trials-interval" && <InterConditionInterval onComplete={advancePhase} />}
+      {currentPhase === "choice-trials-images-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
       {currentPhase === "first-desc-choice" && (
         <FirstDescChoice
@@ -212,14 +212,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       {currentPhase === "final-survey" && (
         <FinalSurvey
           onComplete={() => {
-            alert("Experiment completed! Thank you for your participation.")
-            setExperimentData({
-              participantId: "",
-              currentPhase: "consent",
-              trials: [],
-              totalPoints: 0,
-            })
-            setCurrentPhase("consent")
+            // Don't clear data here - let the completion page handle it
             onComplete?.()
           }}
           addTrialData={addTrialData}

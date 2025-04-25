@@ -19,7 +19,7 @@ export default function FinalChoiceBlueOrange({ onAdvance, addTrialData }: Final
       phase: "final-choice-blue-orange",
       trialNumber: 1,
       condition: "final-choice-blue-orange",
-      choice,
+      choice: choice,
       outcome: success,
       points,
     })

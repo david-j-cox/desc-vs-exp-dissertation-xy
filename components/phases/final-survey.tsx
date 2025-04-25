@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import OSFUploader from "../osf-uploader"
 import type { ExperimentData } from "../experiment"
 
@@ -19,6 +20,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [submitted, setSubmitted] = useState(false)
   const [experimentData, setExperimentData] = useState<ExperimentData | null>(null)
+  const router = useRouter()
 
   // Load experiment data for OSF upload
   useEffect(() => {
@@ -59,7 +61,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
       })
     })
 
-    // Then, update the Prolific ID in localStorage
+    // Then, update the Prolific ID and survey responses in localStorage
     try {
       const storedData = localStorage.getItem("experiment-data")
       if (storedData) {
@@ -79,9 +81,9 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
     }
 
     setSubmitted(true)
-    // Only call onComplete after data is saved
+    // Redirect to completion page after a short delay
     setTimeout(() => {
-      onComplete()
+      router.push("/completion")
     }, 1000)
   }
 
@@ -308,8 +310,6 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
                 onClick={() => {
                   if (responses.prolificId && responses.prolificId.trim()) {
                     handleSubmit()
-                    // Close the browser tab
-                    window.close()
                   }
                 }}
                 disabled={!responses.prolificId || !responses.prolificId.trim()}
