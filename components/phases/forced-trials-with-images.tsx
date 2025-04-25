@@ -11,6 +11,7 @@ interface ForcedTrialsWithImagesProps {
   onFail: () => void
   setExperimentData: (data: ExperimentData) => void
   experimentData: ExperimentData
+  currentTrialNumber: number
 }
 
 interface Stimulus {
@@ -29,13 +30,12 @@ const TRIAL_OUTCOMES: Record<string, boolean[]> = {
   D: [false, false, false, false, false, true, false, false, false, false], // 10 trials, 1 true
 }
 
-export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail, setExperimentData, experimentData }: ForcedTrialsWithImagesProps) {
+export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail, setExperimentData, experimentData, currentTrialNumber }: ForcedTrialsWithImagesProps) {
   const [currentTrial, setCurrentTrial] = useState(0)
   const [currentStimulusIndex, setCurrentStimulusIndex] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState<"success" | "failure">("success")
   const [isLoading, setIsLoading] = useState(false)
-  const [trialCount, setTrialCount] = useState(1) // Keep track of absolute trial number
 
   const TRIALS_PER_STIMULUS = 10
   const TOTAL_TRIALS = TRIALS_PER_STIMULUS * 4 // 4 stimuli, 10 trials each
@@ -58,7 +58,7 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
     // Record data with sequential trial number
     addTrialData({
       phase: "forced-trials-with-images",
-      trialNumber: trialCount,
+      trialNumber: currentTrialNumber,
       condition: "forced-trials-with-images",
       stimulus: currentStimulus.id,
       choice: currentStimulus.id,
@@ -68,9 +68,6 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
 
     setShowOutcome(true)
     setOutcome(isCorrect ? "success" : "failure")
-
-    // Increment trial count immediately after recording data
-    setTrialCount(prev => prev + 1)
 
     setTimeout(() => {
       setShowOutcome(false)
@@ -82,11 +79,6 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
           setTimeout(() => {
             setCurrentStimulusIndex(prev => prev + 1)
             setCurrentTrial(nextTrial)
-            // Reset total points when moving to a new stimulus
-            setExperimentData({
-              ...experimentData,
-              totalPoints: 0
-            })
             setIsLoading(false)
           }, 3000)
         } else {

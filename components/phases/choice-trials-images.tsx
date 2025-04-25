@@ -11,6 +11,7 @@ interface ChoiceTrialsImagesProps {
   probabilityPairs: { p1: number; p2: number }[]
   phase: ExperimentData["currentPhase"]
   onFail?: (() => void) | undefined
+  currentTrialNumber: number
 }
 
 type ChoicePair = {
@@ -18,7 +19,7 @@ type ChoicePair = {
   right: { stimulus: string; image: string }
 }
 
-export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail }: ChoiceTrialsImagesProps) {
+export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail, currentTrialNumber }: ChoiceTrialsImagesProps) {
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState(false)
@@ -26,7 +27,6 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
   const [correctChoices, setCorrectChoices] = useState<boolean[]>([])
-  const [trialCount, setTrialCount] = useState(1) // Keep track of absolute trial number
 
   const choicePairs: ChoicePair[] = [
     {
@@ -58,16 +58,13 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
       // Record trial data with sequential trial number
       addTrialData({
         phase,
-        trialNumber: trialCount,
+        trialNumber: currentTrialNumber,
         condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
         stimulus: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         choice: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         outcome: success,
         points: success ? 100 : 0,
       })
-
-      // Increment trial count
-      setTrialCount(prev => prev + 1)
 
       // Reset pending choice
       setPendingChoice(null)
@@ -100,7 +97,7 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
         }, 1000)
       }
     }
-  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading, showOutcome, trialCount])
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading, showOutcome, currentTrialNumber])
 
   const handleChoice = (choiceIndex: 0 | 1) => {
     if (showOutcome || isLoading) return

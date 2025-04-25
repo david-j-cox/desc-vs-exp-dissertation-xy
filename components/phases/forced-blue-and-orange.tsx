@@ -10,6 +10,7 @@ interface ForcedBlueAndOrangeProps {
   addTrialData: (data: Omit<ExperimentData["trials"][0], "timestamp">) => void
   setExperimentData: (data: ExperimentData) => void
   experimentData: ExperimentData
+  currentTrialNumber: number
 }
 
 interface ButtonConfig {
@@ -19,7 +20,7 @@ interface ButtonConfig {
   points: number
 }
 
-export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperimentData, experimentData }: ForcedBlueAndOrangeProps) {
+export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperimentData, experimentData, currentTrialNumber }: ForcedBlueAndOrangeProps) {
   const router = useRouter()
   const buttons: ButtonConfig[] = [
     { id: "blue", color: "bg-blue-500", probability: 1.0, points: 50 },
@@ -47,7 +48,7 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
     // Record trial data
     addTrialData({
       phase: "forced-blue-and-orange",
-      trialNumber: trialCount + 1,
+      trialNumber: currentTrialNumber,
       condition: `forced_${currentButton.id}`,
       stimulus: currentButton.id,
       choice: currentButton.id,
@@ -69,17 +70,11 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
         setTimeout(() => {
           setCurrentButtonIndex(prev => prev + 1)
           setTrialCount(0)
-          // Reset total points when moving to the next color
-          setExperimentData({
-            ...experimentData,
-            totalPoints: 0
-          })
           setIsLoading(false)
         }, 3000)
       } else {
-        // All trials completed, store final data and navigate to completion page
-        localStorage.setItem('experimentData', JSON.stringify(experimentData))
-        router.push('/completion')
+        // All trials completed
+        onAdvance()
       }
     }, 1500)
   }
