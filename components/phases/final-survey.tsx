@@ -45,18 +45,43 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
       { number: 6, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-b", type: "consistency" as const },
       { number: 7, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-c", type: "consistency" as const },
       { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d", type: "consistency" as const },
+      { number: 9, text: "Which button do you think gives the BEST outcome?", stimulus: "all", type: "best" as const },
+      { number: 10, text: "Which button do you think gives the WORST outcome?", stimulus: "all", type: "worst" as const },
+      { number: 11, text: "What strategy did you use to pick between these two buttons?", stimulus: "stimulus-a-b", type: "strategy" as const },
+      { number: 12, text: "What strategy did you use to pick between these two buttons?", stimulus: "blue-orange", type: "strategy" as const },
+      { number: 13, text: "Enter Your Prolific ID Here:", stimulus: "prolific", type: "id" as const }
     ]
 
-    // First, add all survey responses to the trial data
+    // Add all survey responses to the trial data
     questions.forEach((q, index) => {
-      const responseKey = index < 4 ? `q1B${index + 1}` : `q2B${index - 3}`
+      let responseKey
+      let response
+      
+      if (index < 4) {
+        responseKey = `q1B${index + 1}`
+      } else if (index < 8) {
+        responseKey = `q2B${index - 3}`
+      } else if (index === 8) {
+        responseKey = 'q3'
+      } else if (index === 9) {
+        responseKey = 'q4'
+      } else if (index === 10) {
+        responseKey = 'q5'
+      } else if (index === 11) {
+        responseKey = 'q6'
+      } else {
+        responseKey = 'prolificId'
+      }
+
+      response = responses[responseKey] || ""
+
       addTrialData({
         phase: "final-survey",
         trialNumber: q.number,
         condition: q.text,
         stimulus: q.stimulus,
-        choice: responses[responseKey] || "",
-        questionType: q.type,
+        choice: response,
+        outcome: undefined,
         points: 0,
       })
     })

@@ -31,6 +31,7 @@ export default function SecondDescChoice({ onAdvance, addTrialData }: SecondDesc
       condition: "second-desc-choice",
       stimulus: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
       choice: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
+      outcome: undefined, 
       points: 0,
     })
 
