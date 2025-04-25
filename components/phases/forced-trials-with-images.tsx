@@ -21,6 +21,14 @@ interface Stimulus {
   imageUrl: string
 }
 
+// Define the exact outcomes for each trial of each stimulus
+const TRIAL_OUTCOMES: Record<string, boolean[]> = {
+  A: [true, true, true, true, true, true, true, true, true, true], // 10 trials, all true
+  B: [true, false, false, true, true, false, true, false, true, false], // 10 trials, alternating
+  C: [true, false, false, true, false, false, false, true, false, true], // 10 trials, 4 true
+  D: [false, false, false, false, false, true, false, false, false, false], // 10 trials, 1 true
+}
+
 export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail, setExperimentData, experimentData }: ForcedTrialsWithImagesProps) {
   const [currentTrial, setCurrentTrial] = useState(0)
   const [currentStimulusIndex, setCurrentStimulusIndex] = useState(0)
@@ -40,7 +48,8 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
 
   const handleChoice = () => {
     const currentStimulus = stimuli[currentStimulusIndex]
-    const isCorrect = Math.random() < currentStimulus.probability
+    const trialInBlock = currentTrial % TRIALS_PER_STIMULUS
+    const isCorrect = TRIAL_OUTCOMES[currentStimulus.id][trialInBlock]
     const points = isCorrect ? currentStimulus.points : 0
 
     addTrialData({
