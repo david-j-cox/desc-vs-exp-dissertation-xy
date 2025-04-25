@@ -45,6 +45,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
       { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d", type: "consistency" as const },
     ]
 
+    // First, add all survey responses to the trial data
     questions.forEach((q, index) => {
       const responseKey = index < 4 ? `q1B${index + 1}` : `q2B${index - 3}`
       addTrialData({
@@ -58,20 +59,30 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
       })
     })
 
-    // Store Prolific ID in localStorage for data export
+    // Then, update the Prolific ID in localStorage
     try {
       const storedData = localStorage.getItem("experiment-data")
       if (storedData) {
         const data = JSON.parse(storedData)
         data.participantId = responses.prolificId
+        // Add additional survey responses to the data
+        data.surveyResponses = {
+          ...responses,
+          timestamp: Date.now()
+        }
         localStorage.setItem("experiment-data", JSON.stringify(data))
+        // Update the local state to trigger OSF upload
+        setExperimentData(data)
       }
     } catch (error) {
-      console.error("Error updating Prolific ID:", error)
+      console.error("Error updating experiment data:", error)
     }
 
     setSubmitted(true)
-    onComplete()
+    // Only call onComplete after data is saved
+    setTimeout(() => {
+      onComplete()
+    }, 1000)
   }
 
   const renderQuestion = () => {
