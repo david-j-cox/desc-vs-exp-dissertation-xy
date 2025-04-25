@@ -53,9 +53,6 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
       points: success ? currentButton.points : 0,
     })
 
-    // Show message
-    setMessage(success ? `Success! You earned ${currentButton.points} points.` : "No points this time.")
-
     // Move to next trial after delay
     setTimeout(() => {
       setShowOutcome(false)
@@ -114,8 +111,6 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
             </p>
           </div>
         )}
-
-        {/* {message && <p className="text-lg">{message}</p>} */}
       </div>
     </div>
   )

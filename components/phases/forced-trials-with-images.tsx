@@ -46,7 +46,7 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
     addTrialData({
       phase: "forced-trials-with-images",
       trialNumber: currentTrial + 1,
-      condition: "forced",
+      condition: "forced-trials-with-images",
       stimulus: currentStimulus.id,
       choice: currentStimulus.id,
       outcome: isCorrect,
