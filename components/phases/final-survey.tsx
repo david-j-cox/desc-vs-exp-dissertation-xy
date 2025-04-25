@@ -52,7 +52,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
       { number: 13, text: "Enter Your Prolific ID Here:", stimulus: "prolific", type: "id" as const }
     ]
 
-    // Add all survey responses to the trial data
+    // Add all survey responses to the trial data and update localStorage for each response
     questions.forEach((q, index) => {
       let responseKey
       let response
@@ -75,6 +75,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
 
       response = responses[responseKey] || ""
 
+      // Add trial data
       addTrialData({
         phase: "final-survey",
         trialNumber: q.number,
@@ -84,26 +85,31 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         outcome: undefined,
         points: 0,
       })
-    })
 
-    // Then, update the Prolific ID and survey responses in localStorage
-    try {
-      const storedData = localStorage.getItem("experiment-data")
-      if (storedData) {
-        const data = JSON.parse(storedData)
-        data.participantId = responses.prolificId
-        // Add additional survey responses to the data
-        data.surveyResponses = {
-          ...responses,
-          timestamp: Date.now()
+      // Update localStorage for each response
+      try {
+        const storedData = localStorage.getItem("experiment-data")
+        if (storedData) {
+          const data = JSON.parse(storedData)
+          // Initialize surveyResponses if it doesn't exist
+          if (!data.surveyResponses) {
+            data.surveyResponses = {}
+          }
+          // Add the current response
+          data.surveyResponses[responseKey] = response
+          data.surveyResponses.timestamp = Date.now()
+          // If this is the Prolific ID, also update participantId
+          if (responseKey === 'prolificId') {
+            data.participantId = response
+          }
+          localStorage.setItem("experiment-data", JSON.stringify(data))
+          // Update the local state to trigger OSF upload
+          setExperimentData(data)
         }
-        localStorage.setItem("experiment-data", JSON.stringify(data))
-        // Update the local state to trigger OSF upload
-        setExperimentData(data)
+      } catch (error) {
+        console.error("Error updating experiment data:", error)
       }
-    } catch (error) {
-      console.error("Error updating experiment data:", error)
-    }
+    })
 
     setSubmitted(true)
     // Redirect to completion page after a short delay
