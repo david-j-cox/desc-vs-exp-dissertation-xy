@@ -7,9 +7,14 @@ import type { ExperimentData } from "../experiment"
 interface FinalChoiceBlueOrangeProps {
   onAdvance: () => void
   addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  trialNumber?: number
 }
 
-export default function FinalChoiceBlueOrange({ onAdvance, addTrialData }: FinalChoiceBlueOrangeProps) {
+export default function FinalChoiceBlueOrange({ 
+  onAdvance, 
+  addTrialData,
+  trialNumber = 1 
+}: FinalChoiceBlueOrangeProps) {
   const handleChoice = (choice: string) => {
     const isBlue = choice === "blue"
     const success = isBlue ? true : Math.random() < 0.5

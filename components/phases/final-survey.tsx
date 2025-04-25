@@ -45,8 +45,8 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
       { number: 6, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-b", type: "consistency" as const },
       { number: 7, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-c", type: "consistency" as const },
       { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d", type: "consistency" as const },
-      { number: 9, text: "Which button do you think gives the BEST outcome?", stimulus: "all", type: "best" as const },
-      { number: 10, text: "Which button do you think gives the WORST outcome?", stimulus: "all", type: "worst" as const },
+      { number: 9, text: "Which button do you think gives the BEST outcome?", stimulus: "all-images", type: "best" as const },
+      { number: 10, text: "Which button do you think gives the WORST outcome?", stimulus: "all-images", type: "worst" as const },
       { number: 11, text: "What strategy did you use to pick between these two buttons?", stimulus: "stimulus-a-b", type: "strategy" as const },
       { number: 12, text: "What strategy did you use to pick between these two buttons?", stimulus: "blue-orange", type: "strategy" as const },
       { number: 13, text: "Enter Your Prolific ID Here:", stimulus: "prolific", type: "id" as const }
@@ -84,13 +84,13 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         choice: response,
         outcome: undefined,
         points: 0,
-      })
+    })
 
       // Update localStorage for each response
-      try {
-        const storedData = localStorage.getItem("experiment-data")
-        if (storedData) {
-          const data = JSON.parse(storedData)
+    try {
+      const storedData = localStorage.getItem("experiment-data")
+      if (storedData) {
+        const data = JSON.parse(storedData)
           // Initialize surveyResponses if it doesn't exist
           if (!data.surveyResponses) {
             data.surveyResponses = {}
@@ -101,14 +101,14 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
           // If this is the Prolific ID, also update participantId
           if (responseKey === 'prolificId') {
             data.participantId = response
-          }
-          localStorage.setItem("experiment-data", JSON.stringify(data))
-          // Update the local state to trigger OSF upload
-          setExperimentData(data)
         }
-      } catch (error) {
-        console.error("Error updating experiment data:", error)
+        localStorage.setItem("experiment-data", JSON.stringify(data))
+        // Update the local state to trigger OSF upload
+        setExperimentData(data)
       }
+    } catch (error) {
+      console.error("Error updating experiment data:", error)
+    }
     })
 
     setSubmitted(true)
