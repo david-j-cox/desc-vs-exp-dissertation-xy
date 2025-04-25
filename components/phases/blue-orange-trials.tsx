@@ -67,35 +67,24 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
           </p>
         </div>
       ) : (
-        <div className="flex flex-col items-center space-y-4">
-          <div className="flex space-x-8">
-            {buttonOrder === "blue-orange" ? (
-              <>
-                <Button
-                  className="w-32 h-32 bg-blue-500 text-white text-2xl"
-                  onClick={() => handleChoice("blue")}
-                >
-                </Button>
-                <Button
-                  className="w-32 h-32 bg-orange-500 text-white text-2xl"
-                  onClick={() => handleChoice("orange")}
-                >
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  className="w-32 h-32 bg-orange-500 text-white text-2xl"
-                  onClick={() => handleChoice("orange")}
-                >
-                </Button>
-                <Button
-                  className="w-32 h-32 bg-blue-500 text-white text-2xl"
-                  onClick={() => handleChoice("blue")}
-                >
-                </Button>
-              </>
-            )}
+        <div className="flex flex-col items-center gap-8">
+          <div className="flex gap-8">
+            <Button
+              variant="outline"
+              size="lg"
+              className={`w-64 h-64 text-2xl bg-blue-500 text-white hover:bg-blue-500`}
+              onClick={() => handleChoice("blue")}
+            >
+              Blue
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className={`w-64 h-64 text-2xl bg-orange-500 text-white hover:bg-orange-500`}
+              onClick={() => handleChoice("orange")}
+            >
+              Orange
+            </Button>
           </div>
         </div>
       )}

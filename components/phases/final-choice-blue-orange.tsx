@@ -33,12 +33,12 @@ export default function FinalChoiceBlueOrange({ onAdvance, addTrialData }: Final
         <p className="text-xl font-bold text-center">If you only had one choice between these two buttons, which would you prefer?</p>
         <div className="flex space-x-8">
           <Button
-            className="w-32 h-32 bg-blue-500 text-white text-2xl"
+            className="w-64 h-64 bg-blue-500 text-white text-2xl hover:bg-blue-500"
             onClick={() => handleChoice("blue")}
           >
           </Button>
           <Button
-            className="w-32 h-32 bg-orange-500 text-white text-2xl"
+            className="w-64 h-64 bg-orange-500 text-white text-2xl hover:bg-orange-500"
             onClick={() => handleChoice("orange")}
           >
           </Button>

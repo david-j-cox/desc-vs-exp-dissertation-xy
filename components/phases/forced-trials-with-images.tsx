@@ -107,14 +107,15 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
       ) : (
         <div className="flex flex-col items-center space-y-4">
           <div 
-            className="relative w-64 h-64 mb-4 cursor-pointer transition-transform hover:scale-105"
+            className="relative w-64 h-64 mb-4 cursor-pointer"
             onClick={handleChoice}
           >
             <Image
               src={currentStimulus.imageUrl}
               alt={`Stimulus ${currentStimulus.id}`}
-              fill
-              style={{ objectFit: 'contain' }}
+              width={256}
+              height={256}
+              className="w-64 h-64 object-contain"
               priority
             />
           </div>

@@ -44,6 +44,7 @@ export type ExperimentData = {
     choice?: string
     outcome?: boolean
     points?: number
+    questionType?: "probability" | "consistency"
     timestamp: number
   }[]
   totalPoints: number

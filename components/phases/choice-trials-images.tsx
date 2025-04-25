@@ -124,7 +124,7 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
         {!showOutcome && (
           <div className="flex space-x-8">
             <Button
-              className="w-32 h-32 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
+              className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
               onClick={() => handleChoice(0)}
               disabled={showOutcome}
             >
@@ -132,15 +132,15 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
                 <Image
                   src={currentChoicePair.left.image}
                   alt={`Stimulus ${currentChoicePair.left.stimulus}`}
-                  width={800}
-                  height={800}
-                  className="object-contain"
+                  width={256}
+                  height={256}
+                  className="w-64 h-64 object-contain"
                 />
               </div>
             </Button>
 
             <Button
-              className="w-32 h-32 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
+              className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
               onClick={() => handleChoice(1)}
               disabled={showOutcome}
             >
@@ -148,9 +148,9 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
                 <Image
                   src={currentChoicePair.right.image}
                   alt={`Stimulus ${currentChoicePair.right.stimulus}`}
-                  width={800}
-                  height={800}
-                  className="object-contain"
+                  width={256}
+                  height={256}
+                  className="w-64 h-64 object-contain"
                 />
               </div>
             </Button>

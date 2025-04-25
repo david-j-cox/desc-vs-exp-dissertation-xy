@@ -33,16 +33,16 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
   }, [])
 
   const handleSubmit = () => {
-    // Record survey responses
+    // Record survey responses with detailed data
     const questions = [
-      { number: 1, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-a" },
-      { number: 2, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-b" },
-      { number: 3, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-c" },
-      { number: 4, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-d" },
-      { number: 5, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-a" },
-      { number: 6, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-b" },
-      { number: 7, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-c" },
-      { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d" },
+      { number: 1, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-a", type: "probability" as const },
+      { number: 2, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-b", type: "probability" as const },
+      { number: 3, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-c", type: "probability" as const },
+      { number: 4, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-d", type: "probability" as const },
+      { number: 5, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-a", type: "consistency" as const },
+      { number: 6, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-b", type: "consistency" as const },
+      { number: 7, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-c", type: "consistency" as const },
+      { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d", type: "consistency" as const },
     ]
 
     questions.forEach((q, index) => {
@@ -53,6 +53,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         condition: q.text,
         stimulus: q.stimulus,
         choice: responses[responseKey] || "",
+        questionType: q.type,
         points: 0,
       })
     })
@@ -79,7 +80,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center mb-4">
-              <Image src="/images/stimulus-a.png" alt="Button 1" width={100} height={100} />
+              <Image src="/images/stimulus-a.png" alt="Button 1" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
               If you pressed this button 100 times, how many times do you think you would earn points?
@@ -96,7 +97,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center mb-4">
-              <Image src="/images/stimulus-b.png" alt="Button 2" width={100} height={100} />
+              <Image src="/images/stimulus-b.png" alt="Button 2" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
               If you pressed this button 100 times, how many times do you think you would earn points?
@@ -113,7 +114,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center mb-4">
-              <Image src="/images/stimulus-c.png" alt="Button 3" width={100} height={100} />
+              <Image src="/images/stimulus-c.png" alt="Button 3" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
               If you pressed this button 100 times, how many times do you think you would earn points?
@@ -130,7 +131,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center mb-4">
-              <Image src="/images/stimulus-d.png" alt="Button 4" width={100} height={100} />
+              <Image src="/images/stimulus-d.png" alt="Button 4" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
               If you pressed this button 100 times, how many times do you think you would earn points?
@@ -147,7 +148,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center mb-4">
-              <Image src="/images/stimulus-a.png" alt="Button 1" width={100} height={100} />
+              <Image src="/images/stimulus-a.png" alt="Button 1" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
               How consistently do you think points are earned from this button?
@@ -163,7 +164,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center mb-4">
-              <Image src="/images/stimulus-b.png" alt="Button 2" width={100} height={100} />
+              <Image src="/images/stimulus-b.png" alt="Button 2" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
               How consistently do you think points are earned from this button?
@@ -179,7 +180,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center mb-4">
-              <Image src="/images/stimulus-c.png" alt="Button 3" width={100} height={100} />
+              <Image src="/images/stimulus-c.png" alt="Button 3" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
               How consistently do you think points are earned from this button?
@@ -195,7 +196,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         return (
           <div className="space-y-4">
             <div className="flex justify-center mb-4">
-              <Image src="/images/stimulus-d.png" alt="Button 4" width={100} height={100} />
+              <Image src="/images/stimulus-d.png" alt="Button 4" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
               How consistently do you think points are earned from this button?
