@@ -40,6 +40,11 @@ export default function CompletionPage() {
         <p className="mb-4">
           Your responses have been recorded. Thank you for participating in our experiment.
         </p>
+        {experimentData && (
+          <div className="mb-4">
+            <OSFUploader experimentData={experimentData} autoUpload={true} />
+          </div>
+        )}
         <p className="text-gray-600">
           You can safely close this window in {countdown} seconds...
         </p>
