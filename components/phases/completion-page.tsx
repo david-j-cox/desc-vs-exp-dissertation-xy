@@ -24,7 +24,6 @@ export default function CompletionPage() {
       setCountdown(prev => {
         if (prev <= 1) {
           // Close the window when countdown reaches 0
-          window.close()
           return 0
         }
         return prev - 1
