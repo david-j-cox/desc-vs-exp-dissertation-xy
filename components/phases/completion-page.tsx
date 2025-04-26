@@ -44,9 +44,6 @@ export default function CompletionPage() {
         <p className="text-gray-600">
           You can safely close this window in {countdown} seconds...
         </p>
-        <div className="mt-6">
-          <OSFUploader experimentData={experimentData} autoUpload={true} />
-        </div>
       </div>
     </div>
   )
