@@ -6,14 +6,12 @@ import type { ExperimentData } from "../experiment"
 
 interface FinalChoiceBlueOrangeProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
-  currentTrialNumber: number
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
 }
 
 export default function FinalChoiceBlueOrange({ 
   onAdvance, 
-  addTrialData,
-  currentTrialNumber
+  addTrialData
 }: FinalChoiceBlueOrangeProps) {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -27,7 +25,6 @@ export default function FinalChoiceBlueOrange({
     // Record trial data
     addTrialData({
       phase: "final-choice-blue-orange",
-      trialNumber: currentTrialNumber,
       condition: "final-choice-blue-orange",
       stimulus: "blue vs. orange",
       choice: choice,

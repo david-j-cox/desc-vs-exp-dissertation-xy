@@ -7,11 +7,10 @@ import type { ExperimentData } from "../experiment"
 
 interface FirstDescChoiceProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
-  currentTrialNumber: number
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
 }
 
-export default function FirstDescChoice({ onAdvance, addTrialData, currentTrialNumber }: FirstDescChoiceProps) {
+export default function FirstDescChoice({ onAdvance, addTrialData }: FirstDescChoiceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
 
@@ -26,10 +25,9 @@ export default function FirstDescChoice({ onAdvance, addTrialData, currentTrialN
     // Record trial data before setting loading state
     const chosenStimulus = choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus
     const otherStimulus = choiceIndex === 0 ? choicePair.right.stimulus : choicePair.left.stimulus
-    
+    console.log("Logging first-desc-choice trial");
     addTrialData({
       phase: "first-desc-choice",
-      trialNumber: currentTrialNumber,
       condition: "first-description-choice",
       stimulus: `${chosenStimulus}-vs-${otherStimulus}`,
       choice: chosenStimulus,

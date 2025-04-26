@@ -7,15 +7,10 @@ import type { ExperimentData } from "../experiment"
 
 interface SecondDescChoiceProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
-  currentTrialNumber: number
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
 }
 
-export default function SecondDescChoice({ 
-  onAdvance, 
-  addTrialData,
-  currentTrialNumber
-}: SecondDescChoiceProps) {
+export default function SecondDescChoice({ onAdvance, addTrialData }: SecondDescChoiceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
 
@@ -33,7 +28,6 @@ export default function SecondDescChoice({
     
     addTrialData({
       phase: "second-desc-choice",
-      trialNumber: currentTrialNumber,
       condition: "second-description-choice",
       stimulus: `${chosenStimulus}-vs-${otherStimulus}`,
       choice: chosenStimulus,

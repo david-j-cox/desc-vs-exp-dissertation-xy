@@ -6,11 +6,10 @@ import type { ExperimentData } from "../experiment"
 
 interface BlueOrangeTrialsProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
-  currentTrialNumber: number
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
 }
 
-export default function BlueOrangeTrials({ onAdvance, addTrialData, currentTrialNumber }: BlueOrangeTrialsProps) {
+export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrangeTrialsProps) {
   const [currentTrial, setCurrentTrial] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState<"success" | "failure">("success")
@@ -26,7 +25,6 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData, currentTrial
     
     addTrialData({
       phase: "blue-orange-trials",
-      trialNumber: currentTrialNumber + currentTrial + 1,
       condition: "blue-orange-trials",
       choice: choice,
       outcome: success,

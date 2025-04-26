@@ -7,11 +7,10 @@ import type { ExperimentData } from "../experiment"
 
 interface ForcedTrialsWithImagesProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
   onFail: () => void
   setExperimentData: (data: ExperimentData) => void
   experimentData: ExperimentData
-  currentTrialNumber: number
 }
 
 interface Stimulus {
@@ -30,7 +29,7 @@ const TRIAL_OUTCOMES: Record<string, boolean[]> = {
   D: [false, false, false, false, false, true, false, false, false, false], // 10 trials, 1 true
 }
 
-export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail, setExperimentData, experimentData, currentTrialNumber }: ForcedTrialsWithImagesProps) {
+export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail, setExperimentData, experimentData }: ForcedTrialsWithImagesProps) {
   const [currentTrial, setCurrentTrial] = useState(0)
   const [currentStimulusIndex, setCurrentStimulusIndex] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
@@ -58,7 +57,6 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
     // Record data with sequential trial number
     addTrialData({
       phase: "forced-trials-with-images",
-      trialNumber: currentTrialNumber,
       condition: "forced-trials-with-images",
       stimulus: currentStimulus.id,
       choice: currentStimulus.id,

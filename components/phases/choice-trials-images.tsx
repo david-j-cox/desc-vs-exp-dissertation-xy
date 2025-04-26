@@ -7,11 +7,10 @@ import type { ExperimentData } from "../experiment"
 
 interface ChoiceTrialsImagesProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
   probabilityPairs: { p1: number; p2: number }[]
   phase: ExperimentData["currentPhase"]
   onFail?: (() => void) | undefined
-  currentTrialNumber: number
 }
 
 type ChoicePair = {
@@ -19,7 +18,7 @@ type ChoicePair = {
   right: { stimulus: string; image: string }
 }
 
-export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail, currentTrialNumber }: ChoiceTrialsImagesProps) {
+export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail }: ChoiceTrialsImagesProps) {
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
@@ -53,7 +52,6 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
       // Record trial data with sequential trial number
       addTrialData({
         phase,
-        trialNumber: currentTrialNumber,
         condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
         stimulus: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         choice: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
@@ -84,12 +82,39 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
         }
       }
     }
-  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading, currentTrialNumber])
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading])
 
   const handleChoice = (choiceIndex: 0 | 1) => {
-    if (isLoading) return
-    setPendingChoice({ choiceIndex })
-  }
+    if (isLoading) return;
+
+    const currentPair = probabilityPairs[0];
+    const selectedProbability = choiceIndex === 0 ? currentPair.p1 : currentPair.p2;
+    const choicePair = choicePairs[currentPairIndex];
+    const success = Math.random() < selectedProbability;
+
+    // Log the trial
+    addTrialData({
+      phase,
+      condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
+      stimulus: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
+      choice: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
+      outcome: success,
+      points: success ? 100 : 0,
+    });
+
+    // Update state and advance phase as before:
+    // If there are more trials, move to the next one after a delay
+    if (currentPairIndex < choicePairs.length - 1) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setCurrentPairIndex((prev) => prev + 1);
+        setIsLoading(false);
+      }, 1000);
+    } else {
+      // If this was the last trial, advance to the next phase
+      onAdvance();
+    }
+  };
 
   if (isLoading) {
     return (
