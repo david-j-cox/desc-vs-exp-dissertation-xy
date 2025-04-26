@@ -433,7 +433,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-xl">You may now close this window in your browser.</p>
+          <p className="text-xl">Thank you for answering all the questions.</p>
         </div>
       )}
     </div>
