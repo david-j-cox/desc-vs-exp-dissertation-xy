@@ -33,6 +33,7 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
   const [message, setMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const trialsPerButton = 10
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const currentButton = buttons[currentButtonIndex]
 
@@ -72,10 +73,17 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
         }, 3000)
       } else {
         // All trials completed
-        onAdvance()
+        setShouldAdvancePhase(true)
       }
     }, 1500)
   }
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
 
   if (isLoading) {
     return (

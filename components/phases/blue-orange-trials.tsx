@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import type { ExperimentData } from "../experiment"
 
@@ -17,6 +17,7 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
   const [buttonOrder, setButtonOrder] = useState<"blue-orange" | "orange-blue">(
     Math.random() < 0.5 ? "blue-orange" : "orange-blue"
   )
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const handleChoice = (choice: string) => {
     const isBlue = choice === "blue"
@@ -44,10 +45,17 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
       if (currentTrial < 40) {
         setCurrentTrial(prev => prev + 1)
       } else {
-        onAdvance()
+        setShouldAdvancePhase(true)
       }
     }, 2000)
   }
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
 
   return (
     <div className="flex flex-col items-center space-y-8">

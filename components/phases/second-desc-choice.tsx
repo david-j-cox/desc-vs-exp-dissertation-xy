@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import type { ExperimentData } from "../experiment"
@@ -13,6 +13,7 @@ interface SecondDescChoiceProps {
 export default function SecondDescChoice({ onAdvance, addTrialData }: SecondDescChoiceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const choicePair = {
     left: { stimulus: "stimulus-a", image: "/images/stimulus-a.png" },
@@ -39,9 +40,16 @@ export default function SecondDescChoice({ onAdvance, addTrialData }: SecondDesc
     setPendingChoice({ choiceIndex })
     setIsLoading(true)
     setTimeout(() => {
-      onAdvance()
+      setShouldAdvancePhase(true)
     }, 500)
   }
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
 
   if (isLoading) {
     return (

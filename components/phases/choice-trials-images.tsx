@@ -23,6 +23,7 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
   const [correctChoices, setCorrectChoices] = useState<boolean[]>([])
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const choicePairs: ChoicePair[] = [
     {
@@ -78,42 +79,22 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
             onFail()
           }, 500)
         } else {
-          onAdvance()
+          setShouldAdvancePhase(true)
         }
       }
     }
   }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading])
 
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
+
   const handleChoice = (choiceIndex: 0 | 1) => {
     if (isLoading) return;
-
-    const currentPair = probabilityPairs[0];
-    const selectedProbability = choiceIndex === 0 ? currentPair.p1 : currentPair.p2;
-    const choicePair = choicePairs[currentPairIndex];
-    const success = Math.random() < selectedProbability;
-
-    // Log the trial
-    addTrialData({
-      phase,
-      condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
-      stimulus: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
-      choice: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
-      outcome: success,
-      points: success ? 100 : 0,
-    });
-
-    // Update state and advance phase as before:
-    // If there are more trials, move to the next one after a delay
-    if (currentPairIndex < choicePairs.length - 1) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setCurrentPairIndex((prev) => prev + 1);
-        setIsLoading(false);
-      }, 1000);
-    } else {
-      // If this was the last trial, advance to the next phase
-      onAdvance();
-    }
+    setPendingChoice({ choiceIndex });
   };
 
   if (isLoading) {

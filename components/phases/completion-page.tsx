@@ -42,8 +42,11 @@ export default function CompletionPage() {
           Your responses have been recorded. Thank you for participating in our experiment.
         </p>
         <p className="text-gray-600">
-          This window will close automatically in {countdown} seconds...
+          You can safely close this window in {countdown} seconds...
         </p>
+        <div className="mt-6">
+          <OSFUploader experimentData={experimentData} autoUpload={true} />
+        </div>
       </div>
     </div>
   )

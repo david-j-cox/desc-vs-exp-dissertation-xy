@@ -35,6 +35,7 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState<"success" | "failure">("success")
   const [isLoading, setIsLoading] = useState(false)
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const TRIALS_PER_STIMULUS = 10
   const TOTAL_TRIALS = TRIALS_PER_STIMULUS * 4 // 4 stimuli, 10 trials each
@@ -83,7 +84,7 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
           setCurrentTrial(nextTrial)
         }
       } else {
-        onAdvance()
+        setShouldAdvancePhase(true)
       }
     }, 1000)
   }
@@ -91,6 +92,13 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
   const currentStimulus = stimuli[currentStimulusIndex]
   const trialsInCurrentBlock = (currentTrial % TRIALS_PER_STIMULUS) + 1
   
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
