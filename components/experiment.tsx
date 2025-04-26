@@ -198,7 +198,13 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
 
       {currentPhase === "forced-blue-and-orange-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === "blue-orange-trials" && <BlueOrangeTrials onAdvance={advancePhase} addTrialData={addTrialData} />}
+      {currentPhase === "blue-orange-trials" && (
+        <BlueOrangeTrials 
+          onAdvance={advancePhase} 
+          addTrialData={addTrialData} 
+          currentTrialNumber={globalTrialCount}
+        />
+      )}
 
       {currentPhase === "blue-orange-trials-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
@@ -206,6 +212,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
         <FinalChoiceBlueOrange
           onAdvance={advancePhase}
           addTrialData={addTrialData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
 
@@ -215,6 +222,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
         <SecondDescChoice
           onAdvance={advancePhase}
           addTrialData={addTrialData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
 
@@ -223,10 +231,10 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       {currentPhase === "final-survey" && (
         <FinalSurvey
           onComplete={() => {
-            // Don't clear data here - let the completion page handle it
             onComplete?.()
           }}
           addTrialData={addTrialData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
     </div>
