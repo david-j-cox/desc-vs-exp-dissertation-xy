@@ -59,6 +59,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
   })
 
   const [currentPhase, setCurrentPhase] = useState<Phase>(() => experimentData.currentPhase)
+  const [globalTrialCount, setGlobalTrialCount] = useState(1)
 
   useEffect(() => {
     if (!experimentData.participantId) {
@@ -109,7 +110,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
   }
 
   const addTrialData = (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => {
-    console.log("Adding trial data:", trialData)
+    console.log("Adding trial data:", { ...trialData, trialNumber: globalTrialCount })
     setExperimentData((prev) => {
       const newData = {
         ...prev,
@@ -117,6 +118,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           ...prev.trials,
           {
             ...trialData,
+            trialNumber: globalTrialCount,
             timestamp: Date.now(),
           },
         ],
@@ -125,6 +127,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       console.log("Updated experiment data:", newData)
       return newData
     })
+    setGlobalTrialCount(prev => prev + 1)
   }
 
   useEffect(() => {
@@ -155,6 +158,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           onFail={repeatPhase2}
           setExperimentData={setExperimentData}
           experimentData={experimentData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
 
@@ -167,6 +171,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
           phase={currentPhase}
           onFail={() => setCurrentPhase("forced-trials-with-images")}
+          currentTrialNumber={globalTrialCount}
         />
       )}
 
@@ -187,12 +192,19 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           addTrialData={addTrialData}
           setExperimentData={setExperimentData}
           experimentData={experimentData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
 
       {currentPhase === "forced-blue-and-orange-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
-      {currentPhase === "blue-orange-trials" && <BlueOrangeTrials onAdvance={advancePhase} addTrialData={addTrialData} />}
+      {currentPhase === "blue-orange-trials" && (
+        <BlueOrangeTrials 
+          onAdvance={advancePhase} 
+          addTrialData={addTrialData} 
+          currentTrialNumber={globalTrialCount}
+        />
+      )}
 
       {currentPhase === "blue-orange-trials-interval" && <InterConditionInterval onComplete={advancePhase} />}
 
@@ -200,6 +212,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
         <FinalChoiceBlueOrange
           onAdvance={advancePhase}
           addTrialData={addTrialData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
 
@@ -209,6 +222,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
         <SecondDescChoice
           onAdvance={advancePhase}
           addTrialData={addTrialData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
 
@@ -217,10 +231,10 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       {currentPhase === "final-survey" && (
         <FinalSurvey
           onComplete={() => {
-            // Don't clear data here - let the completion page handle it
             onComplete?.()
           }}
           addTrialData={addTrialData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
     </div>

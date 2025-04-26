@@ -11,6 +11,7 @@ interface ChoiceTrialsImagesProps {
   probabilityPairs: { p1: number; p2: number }[]
   phase: ExperimentData["currentPhase"]
   onFail?: (() => void) | undefined
+  currentTrialNumber: number
 }
 
 type ChoicePair = {
@@ -18,15 +19,11 @@ type ChoicePair = {
   right: { stimulus: string; image: string }
 }
 
-export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail }: ChoiceTrialsImagesProps) {
+export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail, currentTrialNumber }: ChoiceTrialsImagesProps) {
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
-  const [showOutcome, setShowOutcome] = useState(false)
-  const [outcome, setOutcome] = useState(false)
-  const [message, setMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
   const [correctChoices, setCorrectChoices] = useState<boolean[]>([])
-  const [trialCount, setTrialCount] = useState(1) // Keep track of absolute trial number
 
   const choicePairs: ChoicePair[] = [
     {
@@ -40,15 +37,13 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
   ]
 
   useEffect(() => {
-    if (pendingChoice !== null && !isLoading && !showOutcome) {
+    if (pendingChoice !== null && !isLoading) {
       const currentPair = probabilityPairs[0]
       const selectedProbability = pendingChoice.choiceIndex === 0 ? currentPair.p1 : currentPair.p2
       const choicePair = choicePairs[currentPairIndex]
       
       // Determine outcome based on probability
       const success = Math.random() < selectedProbability
-      setOutcome(success)
-      setShowOutcome(true)
 
       // Check if the choice was correct
       const isCorrectChoice = (currentPairIndex === 0 && pendingChoice.choiceIndex === 0) || // Should choose A over C
@@ -58,7 +53,7 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
       // Record trial data with sequential trial number
       addTrialData({
         phase,
-        trialNumber: trialCount,
+        trialNumber: currentTrialNumber,
         condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
         stimulus: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         choice: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
@@ -66,44 +61,33 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
         points: success ? 100 : 0,
       })
 
-      // Increment trial count
-      setTrialCount(prev => prev + 1)
-
       // Reset pending choice
       setPendingChoice(null)
 
       // Move to next trial or advance phase after delay
       if (currentPairIndex < choicePairs.length - 1) {
+        setIsLoading(true)
         setTimeout(() => {
-          setShowOutcome(false)
-          setMessage(null)
-          setIsLoading(true)
-          setTimeout(() => {
-            setCurrentPairIndex((prev) => prev + 1)
-            setIsLoading(false)
-          }, 1000)
+          setCurrentPairIndex((prev) => prev + 1)
+          setIsLoading(false)
         }, 1000)
       } else {
         // Check if all choices were correct
-        setTimeout(() => {
-          setShowOutcome(false)
-          setMessage(null)
-          const allCorrect = correctChoices.every(choice => choice)
-          if (!allCorrect && typeof onFail === 'function') {
-            setIsLoading(true)
-            setTimeout(() => {
-              onFail()
-            }, 500)
-          } else {
-            onAdvance()
-          }
-        }, 1000)
+        const allCorrect = correctChoices.every(choice => choice)
+        if (!allCorrect && typeof onFail === 'function') {
+          setIsLoading(true)
+          setTimeout(() => {
+            onFail()
+          }, 500)
+        } else {
+          onAdvance()
+        }
       }
     }
-  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading, showOutcome, trialCount])
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading, currentTrialNumber])
 
   const handleChoice = (choiceIndex: 0 | 1) => {
-    if (showOutcome || isLoading) return
+    if (isLoading) return
     setPendingChoice({ choiceIndex })
   }
 
@@ -117,60 +101,45 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
 
   return (
     <div className="space-y-6">
-      {showOutcome ? (
-        <div className="text-center">
-          <p className={`text-4xl font-bold ${outcome ? "text-green-600" : "text-red-600"}`}>
-            {outcome ? "✓" : "✗"}
-          </p>
-          <p className="text-xl mt-2">
-            {outcome ? "100 Points Earned" : "No Points Earned"}
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="text-center mb-4">
-            <p className="text-2xl font-medium">Which would you prefer?</p>
-          </div>
+      <div className="text-center mb-4">
+        <p className="text-2xl font-medium">Which would you prefer?</p>
+      </div>
 
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="flex space-x-8">
-              <Button
-                className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
-                onClick={() => handleChoice(0)}
-                disabled={showOutcome || isLoading}
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Image
-                    src={choicePairs[currentPairIndex].left.image}
-                    alt={`Stimulus ${choicePairs[currentPairIndex].left.stimulus}`}
-                    width={256}
-                    height={256}
-                    className="w-64 h-64 object-contain"
-                  />
-                </div>
-              </Button>
-
-              <Button
-                className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
-                onClick={() => handleChoice(1)}
-                disabled={showOutcome || isLoading}
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Image
-                    src={choicePairs[currentPairIndex].right.image}
-                    alt={`Stimulus ${choicePairs[currentPairIndex].right.stimulus}`}
-                    width={256}
-                    height={256}
-                    className="w-64 h-64 object-contain"
-                  />
-                </div>
-              </Button>
+      <div className="flex flex-col items-center justify-center space-y-4">
+        <div className="flex space-x-8">
+          <Button
+            className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
+            onClick={() => handleChoice(0)}
+            disabled={isLoading}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Image
+                src={choicePairs[currentPairIndex].left.image}
+                alt={`Stimulus ${choicePairs[currentPairIndex].left.stimulus}`}
+                width={256}
+                height={256}
+                className="w-64 h-64 object-contain"
+              />
             </div>
-          </div>
-        </>
-      )}
+          </Button>
 
-      {message && <p className="text-lg">{message}</p>}
+          <Button
+            className="w-64 h-64 bg-white border border-gray-300 text-white text-2xl relative overflow-hidden"
+            onClick={() => handleChoice(1)}
+            disabled={isLoading}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Image
+                src={choicePairs[currentPairIndex].right.image}
+                alt={`Stimulus ${choicePairs[currentPairIndex].right.stimulus}`}
+                width={256}
+                height={256}
+                className="w-64 h-64 object-contain"
+              />
+            </div>
+          </Button>
+        </div>
+      </div>
     </div>
   )
 } 

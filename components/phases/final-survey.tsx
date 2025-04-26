@@ -13,9 +13,10 @@ import type { ExperimentData } from "../experiment"
 interface FinalSurveyProps {
   onComplete: () => void
   addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  currentTrialNumber: number
 }
 
-export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyProps) {
+export default function FinalSurvey({ onComplete, addTrialData, currentTrialNumber }: FinalSurveyProps) {
   const [responses, setResponses] = useState<Record<string, string>>({})
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [submitted, setSubmitted] = useState(false)
@@ -40,7 +41,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
     if (currentResponse) {
       addTrialData({
         phase: "final-survey",
-        trialNumber: currentQuestion,
+        trialNumber: currentTrialNumber,
         condition: currentResponse.text,
         stimulus: currentResponse.stimulus,
         choice: currentResponse.response,
@@ -101,7 +102,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
     if (finalResponse) {
       addTrialData({
         phase: "final-survey",
-        trialNumber: currentQuestion,
+        trialNumber: currentTrialNumber,
         condition: finalResponse.text,
         stimulus: finalResponse.stimulus,
         choice: finalResponse.response,
