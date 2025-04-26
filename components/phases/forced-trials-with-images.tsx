@@ -7,11 +7,10 @@ import type { ExperimentData } from "../experiment"
 
 interface ForcedTrialsWithImagesProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
   onFail: () => void
   setExperimentData: (data: ExperimentData) => void
   experimentData: ExperimentData
-  currentTrialNumber: number
 }
 
 interface Stimulus {
@@ -30,12 +29,13 @@ const TRIAL_OUTCOMES: Record<string, boolean[]> = {
   D: [false, false, false, false, false, true, false, false, false, false], // 10 trials, 1 true
 }
 
-export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail, setExperimentData, experimentData, currentTrialNumber }: ForcedTrialsWithImagesProps) {
+export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail, setExperimentData, experimentData }: ForcedTrialsWithImagesProps) {
   const [currentTrial, setCurrentTrial] = useState(0)
   const [currentStimulusIndex, setCurrentStimulusIndex] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
   const [outcome, setOutcome] = useState<"success" | "failure">("success")
   const [isLoading, setIsLoading] = useState(false)
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const TRIALS_PER_STIMULUS = 10
   const TOTAL_TRIALS = TRIALS_PER_STIMULUS * 4 // 4 stimuli, 10 trials each
@@ -58,7 +58,6 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
     // Record data with sequential trial number
     addTrialData({
       phase: "forced-trials-with-images",
-      trialNumber: currentTrialNumber,
       condition: "forced-trials-with-images",
       stimulus: currentStimulus.id,
       choice: currentStimulus.id,
@@ -85,7 +84,7 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
           setCurrentTrial(nextTrial)
         }
       } else {
-        onAdvance()
+        setShouldAdvancePhase(true)
       }
     }, 1000)
   }
@@ -93,6 +92,13 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
   const currentStimulus = stimuli[currentStimulusIndex]
   const trialsInCurrentBlock = (currentTrial % TRIALS_PER_STIMULUS) + 1
   
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">

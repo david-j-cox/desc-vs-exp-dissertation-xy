@@ -1,21 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import type { ExperimentData } from "../experiment"
 
 interface FinalChoiceBlueOrangeProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
-  currentTrialNumber: number
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
 }
 
 export default function FinalChoiceBlueOrange({ 
   onAdvance, 
-  addTrialData,
-  currentTrialNumber
+  addTrialData
 }: FinalChoiceBlueOrangeProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const handleChoice = (choice: string) => {
     if (isLoading) return
@@ -27,7 +26,6 @@ export default function FinalChoiceBlueOrange({
     // Record trial data
     addTrialData({
       phase: "final-choice-blue-orange",
-      trialNumber: currentTrialNumber,
       condition: "final-choice-blue-orange",
       stimulus: "blue vs. orange",
       choice: choice,
@@ -38,9 +36,16 @@ export default function FinalChoiceBlueOrange({
     // Set loading state and advance after a short delay
     setIsLoading(true)
     setTimeout(() => {
-      onAdvance()
+      setShouldAdvancePhase(true)
     }, 500)
   }
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
 
   if (isLoading) {
     return (

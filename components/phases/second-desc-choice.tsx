@@ -1,23 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import type { ExperimentData } from "../experiment"
 
 interface SecondDescChoiceProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
-  currentTrialNumber: number
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
 }
 
-export default function SecondDescChoice({ 
-  onAdvance, 
-  addTrialData,
-  currentTrialNumber
-}: SecondDescChoiceProps) {
+export default function SecondDescChoice({ onAdvance, addTrialData }: SecondDescChoiceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const choicePair = {
     left: { stimulus: "stimulus-a", image: "/images/stimulus-a.png" },
@@ -33,7 +29,6 @@ export default function SecondDescChoice({
     
     addTrialData({
       phase: "second-desc-choice",
-      trialNumber: currentTrialNumber,
       condition: "second-description-choice",
       stimulus: `${chosenStimulus}-vs-${otherStimulus}`,
       choice: chosenStimulus,
@@ -45,9 +40,16 @@ export default function SecondDescChoice({
     setPendingChoice({ choiceIndex })
     setIsLoading(true)
     setTimeout(() => {
-      onAdvance()
+      setShouldAdvancePhase(true)
     }, 500)
   }
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
 
   if (isLoading) {
     return (

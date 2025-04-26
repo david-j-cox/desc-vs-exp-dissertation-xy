@@ -7,11 +7,10 @@ import type { ExperimentData } from "../experiment"
 
 interface ChoiceTrialsImagesProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
   probabilityPairs: { p1: number; p2: number }[]
   phase: ExperimentData["currentPhase"]
   onFail?: (() => void) | undefined
-  currentTrialNumber: number
 }
 
 type ChoicePair = {
@@ -19,11 +18,12 @@ type ChoicePair = {
   right: { stimulus: string; image: string }
 }
 
-export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail, currentTrialNumber }: ChoiceTrialsImagesProps) {
+export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilityPairs, phase, onFail }: ChoiceTrialsImagesProps) {
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
   const [correctChoices, setCorrectChoices] = useState<boolean[]>([])
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const choicePairs: ChoicePair[] = [
     {
@@ -53,7 +53,6 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
       // Record trial data with sequential trial number
       addTrialData({
         phase,
-        trialNumber: currentTrialNumber,
         condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
         stimulus: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         choice: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
@@ -80,16 +79,23 @@ export default function ChoiceTrialsImages({ onAdvance, addTrialData, probabilit
             onFail()
           }, 500)
         } else {
-          onAdvance()
+          setShouldAdvancePhase(true)
         }
       }
     }
-  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading, currentTrialNumber])
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading])
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
 
   const handleChoice = (choiceIndex: 0 | 1) => {
-    if (isLoading) return
-    setPendingChoice({ choiceIndex })
-  }
+    if (isLoading) return;
+    setPendingChoice({ choiceIndex });
+  };
 
   if (isLoading) {
     return (

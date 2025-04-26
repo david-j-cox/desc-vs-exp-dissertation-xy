@@ -7,10 +7,9 @@ import { useRouter } from "next/navigation"
 
 interface ForcedBlueAndOrangeProps {
   onAdvance: () => void
-  addTrialData: (data: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (data: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
   setExperimentData: (data: ExperimentData) => void
   experimentData: ExperimentData
-  currentTrialNumber: number
 }
 
 interface ButtonConfig {
@@ -20,7 +19,7 @@ interface ButtonConfig {
   points: number
 }
 
-export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperimentData, experimentData, currentTrialNumber }: ForcedBlueAndOrangeProps) {
+export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperimentData, experimentData }: ForcedBlueAndOrangeProps) {
   const router = useRouter()
   const buttons: ButtonConfig[] = [
     { id: "blue", color: "bg-blue-500", probability: 1.0, points: 50 },
@@ -34,6 +33,7 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
   const [message, setMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const trialsPerButton = 10
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const currentButton = buttons[currentButtonIndex]
 
@@ -48,7 +48,6 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
     // Record trial data
     addTrialData({
       phase: "forced-blue-and-orange",
-      trialNumber: currentTrialNumber,
       condition: `forced_${currentButton.id}`,
       stimulus: currentButton.id,
       choice: currentButton.id,
@@ -74,10 +73,17 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
         }, 3000)
       } else {
         // All trials completed
-        onAdvance()
+        setShouldAdvancePhase(true)
       }
     }, 1500)
   }
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
 
   if (isLoading) {
     return (
