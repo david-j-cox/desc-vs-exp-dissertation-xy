@@ -1,18 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import type { ExperimentData } from "../experiment"
 
 interface FirstDescChoiceProps {
   onAdvance: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
 }
 
 export default function FirstDescChoice({ onAdvance, addTrialData }: FirstDescChoiceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const choicePair = {
     left: { stimulus: "stimulus-a", image: "/images/stimulus-a.png" },
@@ -21,21 +22,34 @@ export default function FirstDescChoice({ onAdvance, addTrialData }: FirstDescCh
 
   const handleChoice = (choiceIndex: 0 | 1) => {
     if (isLoading) return
-    setPendingChoice({ choiceIndex })
-    setIsLoading(true)
-
-    // Record trial data
+    
+    // Record trial data before setting loading state
+    const chosenStimulus = choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus
+    const otherStimulus = choiceIndex === 0 ? choicePair.right.stimulus : choicePair.left.stimulus
+    console.log("Logging first-desc-choice trial");
     addTrialData({
       phase: "first-desc-choice",
-      trialNumber: 1,
-      condition: "choice_a_vs_b",
-      stimulus: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
-      choice: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
+      condition: "first-description-choice",
+      stimulus: `${chosenStimulus}-vs-${otherStimulus}`,
+      choice: chosenStimulus,
+      outcome: undefined, 
       points: 0,
     })
 
-    onAdvance()
+    // Set loading state and advance after a short delay
+    setPendingChoice({ choiceIndex })
+    setIsLoading(true)
+    setTimeout(() => {
+      setShouldAdvancePhase(true)
+    }, 500)
   }
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      onAdvance()
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance])
 
   if (isLoading) {
     return (

@@ -12,15 +12,16 @@ import type { ExperimentData } from "../experiment"
 
 interface FinalSurveyProps {
   onComplete: () => void
-  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
-  currentTrialNumber: number
+  addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => void
 }
 
-export default function FinalSurvey({ onComplete, addTrialData, currentTrialNumber }: FinalSurveyProps) {
+export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyProps) {
   const [responses, setResponses] = useState<Record<string, string>>({})
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [submitted, setSubmitted] = useState(false)
   const [experimentData, setExperimentData] = useState<ExperimentData | null>(null)
+  const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
+  const [shouldAdvanceQuestion, setShouldAdvanceQuestion] = useState(false)
   const router = useRouter()
 
   // Load experiment data for OSF upload
@@ -41,14 +42,12 @@ export default function FinalSurvey({ onComplete, addTrialData, currentTrialNumb
     if (currentResponse) {
       addTrialData({
         phase: "final-survey",
-        trialNumber: currentTrialNumber,
         condition: currentResponse.text,
         stimulus: currentResponse.stimulus,
         choice: currentResponse.response,
         outcome: undefined,
         points: 0,
       })
-
       // Update localStorage
       try {
         const storedData = localStorage.getItem("experiment-data")
@@ -57,7 +56,6 @@ export default function FinalSurvey({ onComplete, addTrialData, currentTrialNumb
           if (!data.surveyResponses) {
             data.surveyResponses = {}
           }
-          
           // Add the current response to surveyResponses
           data.surveyResponses[currentResponse.key] = currentResponse.response
           localStorage.setItem("experiment-data", JSON.stringify(data))
@@ -66,8 +64,7 @@ export default function FinalSurvey({ onComplete, addTrialData, currentTrialNumb
         console.error("Error updating experiment data:", error)
       }
     }
-    
-    setCurrentQuestion(prev => prev + 1)
+    setShouldAdvanceQuestion(true)
   }
 
   const getCurrentQuestionResponse = () => {
@@ -102,14 +99,12 @@ export default function FinalSurvey({ onComplete, addTrialData, currentTrialNumb
     if (finalResponse) {
       addTrialData({
         phase: "final-survey",
-        trialNumber: currentTrialNumber,
         condition: finalResponse.text,
         stimulus: finalResponse.stimulus,
         choice: finalResponse.response,
         outcome: undefined,
         points: 0,
       })
-
       try {
         const storedData = localStorage.getItem("experiment-data")
         if (storedData) {
@@ -117,27 +112,46 @@ export default function FinalSurvey({ onComplete, addTrialData, currentTrialNumb
           if (!data.surveyResponses) {
             data.surveyResponses = {}
           }
-          
           // Add the Prolific ID
           data.surveyResponses[finalResponse.key] = finalResponse.response
           data.participantId = finalResponse.response
-          
           // Add timestamp
           data.surveyResponses.timestamp = Date.now()
-          
           localStorage.setItem("experiment-data", JSON.stringify(data))
           setExperimentData(data)
         }
       } catch (error) {
         console.error("Error updating experiment data:", error)
       }
+      // After logging the final trial, reload the latest experiment data for OSF upload
+      try {
+        const storedData = localStorage.getItem("experiment-data")
+        if (storedData) {
+          setExperimentData(JSON.parse(storedData))
+        }
+      } catch (error) {
+        console.error("Error reloading experiment data for OSF upload:", error)
+      }
     }
-
     setSubmitted(true)
     setTimeout(() => {
-      router.push("/completion")
+      setShouldAdvancePhase(true)
     }, 1000)
   }
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      router.push("/completion")
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, router])
+
+  useEffect(() => {
+    if (shouldAdvanceQuestion) {
+      setCurrentQuestion(prev => prev + 1)
+      setShouldAdvanceQuestion(false)
+    }
+  }, [shouldAdvanceQuestion])
 
   const renderQuestion = () => {
     switch(currentQuestion) {
@@ -373,10 +387,6 @@ export default function FinalSurvey({ onComplete, addTrialData, currentTrialNumb
               >
                 Submit Your Prolific ID
               </Button>
-            </div>
-            {/* Hidden OSF Uploader that will auto-upload when data is available */}
-            <div className="hidden">
-              <OSFUploader experimentData={experimentData} autoUpload={true} />
             </div>
           </div>
         )
