@@ -181,6 +181,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
         <FirstDescChoice
           onAdvance={advancePhase}
           addTrialData={addTrialData}
+          currentTrialNumber={globalTrialCount}
         />
       )}
 

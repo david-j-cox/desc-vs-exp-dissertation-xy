@@ -8,9 +8,10 @@ import type { ExperimentData } from "../experiment"
 interface FirstDescChoiceProps {
   onAdvance: () => void
   addTrialData: (trialData: Omit<ExperimentData["trials"][0], "timestamp">) => void
+  currentTrialNumber: number
 }
 
-export default function FirstDescChoice({ onAdvance, addTrialData }: FirstDescChoiceProps) {
+export default function FirstDescChoice({ onAdvance, addTrialData, currentTrialNumber }: FirstDescChoiceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
 
@@ -21,20 +22,27 @@ export default function FirstDescChoice({ onAdvance, addTrialData }: FirstDescCh
 
   const handleChoice = (choiceIndex: 0 | 1) => {
     if (isLoading) return
-    setPendingChoice({ choiceIndex })
-    setIsLoading(true)
-
-    // Record trial data
+    
+    // Record trial data before setting loading state
+    const chosenStimulus = choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus
+    const otherStimulus = choiceIndex === 0 ? choicePair.right.stimulus : choicePair.left.stimulus
+    
     addTrialData({
       phase: "first-desc-choice",
-      trialNumber: 1,
-      condition: "choice_a_vs_b",
-      stimulus: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
-      choice: choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
+      trialNumber: currentTrialNumber,
+      condition: "first-description-choice",
+      stimulus: `${chosenStimulus}-vs-${otherStimulus}`,
+      choice: chosenStimulus,
+      outcome: undefined, 
       points: 0,
     })
 
-    onAdvance()
+    // Set loading state and advance after a short delay
+    setPendingChoice({ choiceIndex })
+    setIsLoading(true)
+    setTimeout(() => {
+      onAdvance()
+    }, 500)
   }
 
   if (isLoading) {

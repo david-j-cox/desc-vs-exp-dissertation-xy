@@ -44,11 +44,6 @@ export default function CompletionPage() {
         <p className="text-gray-600">
           This window will close automatically in {countdown} seconds...
         </p>
-        
-        {/* Hidden OSF Uploader that will auto-upload when data is available */}
-        <div className="hidden">
-          <OSFUploader experimentData={experimentData} autoUpload={true} />
-        </div>
       </div>
     </div>
   )
