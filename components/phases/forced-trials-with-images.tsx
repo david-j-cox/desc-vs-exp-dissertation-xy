@@ -76,6 +76,12 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
         if (nextTrial % TRIALS_PER_STIMULUS === 0 && nextTrial < TOTAL_TRIALS) {
           setIsLoading(true)
           setTimeout(() => {
+            // Reset points when moving to a new stimulus
+            const newData: ExperimentData = {
+              ...experimentData,
+              totalPoints: 0
+            }
+            setExperimentData(newData)
             setCurrentStimulusIndex(prev => prev + 1)
             setCurrentTrial(nextTrial)
             setIsLoading(false)

@@ -141,7 +141,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
       {(currentPhase === "forced-trials-with-images" || 
         currentPhase === "forced-blue-and-orange" || 
         currentPhase === "blue-orange-trials") && (
-        <div className="mb-4 text-center">
+        <div className="mb-4 text-center sticky top-0 z-10 bg-white py-4">
           <p className="text-4xl font-bold text-black-900">Total Points: {experimentData.totalPoints}</p>
         </div>
       )}

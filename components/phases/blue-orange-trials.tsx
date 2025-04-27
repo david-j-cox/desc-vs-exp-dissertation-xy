@@ -60,7 +60,7 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
   return (
     <div className="flex flex-col items-center space-y-8">
       {showOutcome ? (
-        <div className="text-center w-32 h-32 flex flex-col items-center justify-center">
+        <div className="text-center w-[544px] h-64 flex flex-col items-center justify-center">
           <p className={`text-4xl font-bold ${outcome === "success" ? "text-green-600" : "text-red-600"}`}>
             {outcome === "success" ? "✓" : "✗"}
           </p>

@@ -67,6 +67,12 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
         // Move to next button
         setIsLoading(true)
         setTimeout(() => {
+          // Reset points when moving to the next button
+          const newData: ExperimentData = {
+            ...experimentData,
+            totalPoints: 0
+          }
+          setExperimentData(newData)
           setCurrentButtonIndex(prev => prev + 1)
           setTrialCount(0)
           setIsLoading(false)
