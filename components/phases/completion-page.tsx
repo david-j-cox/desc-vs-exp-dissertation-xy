@@ -4,8 +4,13 @@ import { useEffect, useState } from "react"
 import OSFUploader from "../osf-uploader"
 import type { ExperimentData } from "../experiment"
 
+// Create a type without the outcome field
+type CleanedExperimentData = Omit<ExperimentData, "trials"> & {
+  trials: Array<Omit<ExperimentData["trials"][0], "outcome">>
+}
+
 export default function CompletionPage() {
-  const [experimentData, setExperimentData] = useState<ExperimentData | null>(null)
+  const [experimentData, setExperimentData] = useState<CleanedExperimentData | null>(null)
   const [countdown, setCountdown] = useState(5)
 
   useEffect(() => {
@@ -13,7 +18,13 @@ export default function CompletionPage() {
     try {
       const storedData = localStorage.getItem("experiment-data")
       if (storedData) {
-        setExperimentData(JSON.parse(storedData))
+        const data: ExperimentData = JSON.parse(storedData)
+        // Create cleaned data without outcome field
+        const cleanedData: CleanedExperimentData = {
+          ...data,
+          trials: data.trials.map(({ outcome, ...rest }) => rest)
+        }
+        setExperimentData(cleanedData)
       }
     } catch (error) {
       console.error("Error loading experiment data:", error)
