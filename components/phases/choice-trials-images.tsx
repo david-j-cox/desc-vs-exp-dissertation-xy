@@ -13,6 +13,7 @@ interface ChoiceTrialsImagesProps {
   onFail?: (() => void) | undefined
   attemptCount?: number
   maxAttempts?: number
+  setExperimentData: (callback: (prev: ExperimentData) => ExperimentData) => void
 }
 
 type ChoicePair = {
@@ -27,7 +28,8 @@ export default function ChoiceTrialsImages({
   phase, 
   onFail,
   attemptCount = 0,
-  maxAttempts = 5
+  maxAttempts = 5,
+  setExperimentData
 }: ChoiceTrialsImagesProps) {
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -45,6 +47,26 @@ export default function ChoiceTrialsImages({
       right: { stimulus: "stimulus-b", image: "/images/stimulus-b.png" }
     }
   ]
+
+  useEffect(() => {
+    if (shouldAdvancePhase) {
+      // If we've hit max attempts and not all correct, update phase to final survey
+      if (attemptCount >= maxAttempts - 1 && !currentAttemptChoices.every(choice => choice)) {
+        // Update the experiment phase to final-survey and call onFail
+        setExperimentData((prev) => ({
+          ...prev,
+          currentPhase: "final-survey"
+        }))
+        if (onFail) {
+          onFail()
+        }
+      } else {
+        // Only advance normally if we haven't hit max attempts or all choices were correct
+        onAdvance()
+      }
+      setShouldAdvancePhase(false)
+    }
+  }, [shouldAdvancePhase, onAdvance, attemptCount, maxAttempts, currentAttemptChoices, setExperimentData, onFail])
 
   useEffect(() => {
     if (pendingChoice !== null && !isLoading) {
@@ -73,7 +95,7 @@ export default function ChoiceTrialsImages({
       // Reset pending choice
       setPendingChoice(null)
 
-      // Move to next trial or advance phase after delay
+      // Move to next trial or handle completion
       if (currentPairIndex < choicePairs.length - 1) {
         setIsLoading(true)
         setTimeout(() => {
@@ -83,28 +105,34 @@ export default function ChoiceTrialsImages({
       } else {
         // Check if all choices in current attempt were correct
         const allCorrect = [...currentAttemptChoices, isCorrectChoice].every(choice => choice)
-        if (!allCorrect && typeof onFail === 'function' && attemptCount < maxAttempts - 1) {
-          setIsLoading(true)
-          setTimeout(() => {
-            // Reset choices for next attempt
+        
+        setIsLoading(true)
+        setTimeout(() => {
+          if (!allCorrect && attemptCount >= maxAttempts - 1) {
+            // If this was the last attempt and not all correct, go to final survey
+            setExperimentData((prev) => ({
+              ...prev,
+              currentPhase: "final-survey"
+            }))
+            if (onFail) {
+              onFail()
+            }
+          } else if (!allCorrect) {
+            // If not all correct but attempts remain, reset and try again
             setCurrentAttemptChoices([])
             setCurrentPairIndex(0)
-            onFail()
-          }, 500)
-        } else {
-          // Either all choices were correct or we've hit max attempts
-          setShouldAdvancePhase(true)
-        }
+            if (onFail) {
+              onFail()
+            }
+          } else {
+            // All correct, advance normally
+            setShouldAdvancePhase(true)
+          }
+          setIsLoading(false)
+        }, 500)
       }
     }
-  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, currentAttemptChoices, isLoading, attemptCount, maxAttempts])
-
-  useEffect(() => {
-    if (shouldAdvancePhase) {
-      onAdvance()
-      setShouldAdvancePhase(false)
-    }
-  }, [shouldAdvancePhase, onAdvance])
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, currentAttemptChoices, isLoading, attemptCount, maxAttempts, setExperimentData, onFail])
 
   const handleChoice = (choiceIndex: 0 | 1) => {
     if (isLoading) return;
