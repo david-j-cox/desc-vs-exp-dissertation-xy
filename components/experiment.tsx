@@ -48,6 +48,7 @@ export type ExperimentData = {
     timestamp: number
   }[]
   totalPoints: number
+  surveyResponses: Record<string, any>
 }
 
 export default function Experiment({ onComplete }: { onComplete?: () => void }) {
@@ -56,9 +57,11 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
     currentPhase: "consent",
     trials: [],
     totalPoints: 0,
+    surveyResponses: {},
   })
-
-  const [currentPhase, setCurrentPhase] = useState<Phase>(() => experimentData.currentPhase)
+  const [currentPhase, setCurrentPhase] = useState<Phase>(experimentData.currentPhase)
+  const [choiceTrialsAttempts, setChoiceTrialsAttempts] = useState(0)
+  const MAX_CHOICE_TRIALS_ATTEMPTS = 5
 
   useEffect(() => {
     if (!experimentData.participantId) {
@@ -74,7 +77,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
     setExperimentData((prev) => ({
       ...prev,
       currentPhase: newPhase,
-      totalPoints: 0,
+      totalPoints: newPhase === "choice-trials-images" ? 0 : prev.totalPoints,
     }))
   }
 
@@ -105,7 +108,8 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
   }
 
   const repeatPhase2 = () => {
-    updatePhase("instructions")
+    setChoiceTrialsAttempts(prev => prev + 1)
+    setCurrentPhase("forced-trials-with-images")
   }
 
   const addTrialData = (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => {
@@ -168,7 +172,9 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
           phase={currentPhase}
-          onFail={() => setCurrentPhase("forced-trials-with-images")}
+          onFail={choiceTrialsAttempts < MAX_CHOICE_TRIALS_ATTEMPTS - 1 ? repeatPhase2 : advancePhase}
+          attemptCount={choiceTrialsAttempts}
+          maxAttempts={MAX_CHOICE_TRIALS_ATTEMPTS}
         />
       )}
 
