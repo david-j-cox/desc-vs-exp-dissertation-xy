@@ -32,7 +32,7 @@ export default function ChoiceTrialsImages({
   const [currentPairIndex, setCurrentPairIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [pendingChoice, setPendingChoice] = useState<null | { choiceIndex: 0 | 1 }>(null)
-  const [correctChoices, setCorrectChoices] = useState<boolean[]>([])
+  const [currentAttemptChoices, setCurrentAttemptChoices] = useState<boolean[]>([])
   const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
   const choicePairs: ChoicePair[] = [
@@ -58,7 +58,7 @@ export default function ChoiceTrialsImages({
       // Check if the choice was correct
       const isCorrectChoice = (currentPairIndex === 0 && pendingChoice.choiceIndex === 0) || // Should choose A over C
                             (currentPairIndex === 1 && pendingChoice.choiceIndex === 1)    // Should choose B over D
-      setCorrectChoices(prev => [...prev, isCorrectChoice])
+      setCurrentAttemptChoices(prev => [...prev, isCorrectChoice])
 
       // Record trial data with sequential trial number
       addTrialData({
@@ -81,11 +81,14 @@ export default function ChoiceTrialsImages({
           setIsLoading(false)
         }, 1000)
       } else {
-        // Check if all choices were correct, including the current one
-        const allCorrect = [...correctChoices, isCorrectChoice].every(choice => choice)
+        // Check if all choices in current attempt were correct
+        const allCorrect = [...currentAttemptChoices, isCorrectChoice].every(choice => choice)
         if (!allCorrect && typeof onFail === 'function' && attemptCount < maxAttempts - 1) {
           setIsLoading(true)
           setTimeout(() => {
+            // Reset choices for next attempt
+            setCurrentAttemptChoices([])
+            setCurrentPairIndex(0)
             onFail()
           }, 500)
         } else {
@@ -94,7 +97,7 @@ export default function ChoiceTrialsImages({
         }
       }
     }
-  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, correctChoices, isLoading, attemptCount, maxAttempts])
+  }, [pendingChoice, currentPairIndex, probabilityPairs, choicePairs, phase, addTrialData, onAdvance, onFail, currentAttemptChoices, isLoading, attemptCount, maxAttempts])
 
   useEffect(() => {
     if (shouldAdvancePhase) {
