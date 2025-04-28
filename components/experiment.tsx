@@ -75,12 +75,20 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
   }, [])
 
   const updatePhase = (newPhase: Phase) => {
-    setCurrentPhase(newPhase)
-    setExperimentData((prev) => ({
-      ...prev,
-      currentPhase: newPhase,
-      totalPoints: newPhase === "choice-trials-images" ? 0 : prev.totalPoints,
-    }))
+    if (newPhase === "final-survey") {
+      setCurrentPhase("final-survey")
+      setExperimentData((prev) => ({
+        ...prev,
+        currentPhase: "final-survey",
+      }))
+    } else {
+      setCurrentPhase(newPhase)
+      setExperimentData((prev) => ({
+        ...prev,
+        currentPhase: newPhase,
+        totalPoints: newPhase === "choice-trials-images" ? 0 : prev.totalPoints,
+      }))
+    }
   }
 
   const advancePhase = () => {
@@ -110,8 +118,18 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
   }
 
   const repeatPhase2 = () => {
-    setChoiceTrialsAttempts(prev => prev + 1)
-    setCurrentPhase("forced-trials-with-images")
+    const nextAttempt = choiceTrialsAttempts + 1
+    setChoiceTrialsAttempts(nextAttempt)
+    
+    if (nextAttempt >= MAX_CHOICE_TRIALS_ATTEMPTS) {
+      setCurrentPhase("final-survey")
+      setExperimentData(prev => ({
+        ...prev,
+        currentPhase: "final-survey"
+      }))
+    } else {
+      setCurrentPhase("forced-trials-with-images")
+    }
   }
 
   const addTrialData = (trialData: Omit<ExperimentData["trials"][0], "timestamp" | "trialNumber">) => {
@@ -174,9 +192,10 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
           phase={currentPhase}
-          onFail={choiceTrialsAttempts < MAX_CHOICE_TRIALS_ATTEMPTS - 1 ? repeatPhase2 : () => updatePhase("final-survey")}
+          onFail={repeatPhase2}
           attemptCount={choiceTrialsAttempts}
           maxAttempts={MAX_CHOICE_TRIALS_ATTEMPTS}
+          setExperimentData={setExperimentData}
         />
       )}
 
