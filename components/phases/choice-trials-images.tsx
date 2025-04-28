@@ -63,8 +63,8 @@ export default function ChoiceTrialsImages({
       // Record trial data with sequential trial number
       addTrialData({
         phase,
-        condition: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
-        stimulus: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
+        condition: "choice-trials-images",
+        stimulus: `choice_${choicePair.left.stimulus}_vs_${choicePair.right.stimulus}`,
         choice: pendingChoice.choiceIndex === 0 ? choicePair.left.stimulus : choicePair.right.stimulus,
         outcome: success,
         points: success ? 0 : 0,
