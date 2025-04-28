@@ -12,6 +12,7 @@ import InterConditionInterval from "./phases/inter-condition-interval"
 import FirstDescChoice from "./phases/first-desc-choice"
 import FinalChoiceBlueOrange from "./phases/final-choice-blue-orange"
 import SecondDescChoice from "./phases/second-desc-choice"
+import CompletionPage from "./phases/completion-page"
 import { useLocalStorage } from "@/hooks/use-local-storage"
 
 export type Phase = 
@@ -32,6 +33,7 @@ export type Phase =
   | "second-desc-choice"
   | "second-desc-choice-interval"
   | "final-survey"
+  | "completion"
 
 export type ExperimentData = {
   participantId: string
@@ -172,7 +174,7 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           addTrialData={addTrialData}
           probabilityPairs={[{ p1: 1, p2: 0.5 }]}
           phase={currentPhase}
-          onFail={choiceTrialsAttempts < MAX_CHOICE_TRIALS_ATTEMPTS - 1 ? repeatPhase2 : advancePhase}
+          onFail={choiceTrialsAttempts < MAX_CHOICE_TRIALS_ATTEMPTS - 1 ? repeatPhase2 : () => updatePhase("final-survey")}
           attemptCount={choiceTrialsAttempts}
           maxAttempts={MAX_CHOICE_TRIALS_ATTEMPTS}
         />
@@ -235,6 +237,8 @@ export default function Experiment({ onComplete }: { onComplete?: () => void }) 
           addTrialData={addTrialData}
         />
       )}
+
+      {currentPhase === "completion" && <CompletionPage />}
     </div>
   )
 }
