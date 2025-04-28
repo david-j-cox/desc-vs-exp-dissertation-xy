@@ -81,7 +81,7 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
         // All trials completed
         setShouldAdvancePhase(true)
       }
-    }, 1500)
+    }, 1000)
   }
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-xl font-bold">Next color loading...</p>
+        <p className="text-xl font-bold">The next color is loading...</p>
       </div>
     )
   }
