@@ -27,6 +27,7 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
     addTrialData({
       phase: "blue-orange-trials",
       condition: "blue-orange-trials",
+      stimulus: "blue vs. orange",
       choice: choice,
       outcome: success,
       points,
@@ -47,7 +48,7 @@ export default function BlueOrangeTrials({ onAdvance, addTrialData }: BlueOrange
       } else {
         setShouldAdvancePhase(true)
       }
-    }, 2000)
+    }, 500)
   }
 
   useEffect(() => {

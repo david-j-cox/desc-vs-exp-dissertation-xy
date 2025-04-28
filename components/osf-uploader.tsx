@@ -158,7 +158,7 @@ export default function OSFUploader({ experimentData, autoUpload = false }: OSFU
           <AlertDescription>
             {errorMessage || "Failed to upload data to OSF."}
             <p className="mt-2 text-sm">
-              Please download your data using the "Export as CSV" button and send it to the researcher.
+              Please download your data using the "Export as CSV" button and send it to the researcher at lweil1@endicott.edu.
             </p>
           </AlertDescription>
         </Alert>
