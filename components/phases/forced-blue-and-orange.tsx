@@ -35,13 +35,19 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
   const trialsPerButton = 10
   const [shouldAdvancePhase, setShouldAdvancePhase] = useState(false)
 
+  // Define the exact outcomes for each trial of each button
+  const TRIAL_OUTCOMES: Record<string, boolean[]> = {
+    blue: [true, true, true, true, true, true, true, true, true, true], // 10 trials, all true
+    orange: [true, false, false, true, true, false, true, false, true, false], // 10 trials, 5 true
+  }
+
   const currentButton = buttons[currentButtonIndex]
 
   const handleButtonClick = () => {
     if (showOutcome) return
 
-    // Determine outcome based on probability
-    const success = Math.random() < currentButton.probability
+    // Get outcome from hard-coded array instead of random
+    const success = TRIAL_OUTCOMES[currentButton.id][trialCount]
     setOutcome(success)
     setShowOutcome(true)
 
