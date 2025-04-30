@@ -62,7 +62,7 @@ export default function OSFUploader({ experimentData, autoUpload = false }: OSFU
       // Use the hardcoded OSF configuration
       const osfConfig = OSF_CONFIG
 
-      if (!osfConfig.token || !osfConfig.projectId) {
+      if (!osfConfig.projectId) {
         throw new Error("OSF configuration is incomplete. Please check the OSF configuration in the code.")
       }
 
