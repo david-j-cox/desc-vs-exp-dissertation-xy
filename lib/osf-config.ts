@@ -2,18 +2,14 @@
 // Values are loaded from environment variables
 
 export const OSF_CONFIG = {
-  // Your OSF personal access token
-  token: process.env.NEXT_PUBLIC_OSF_API_TOKEN || "",
-
-  // Your OSF project ID (the 5-character ID from your project URL)
+  // Only expose project ID and folder path on the client side
+  // API token and sensitive data should only be used server-side
   projectId: process.env.NEXT_PUBLIC_OSF_PROJECT_ID || "",
-
-  // Optional: Storage node ID if you want to store files in a specific component
-  // Leave as empty string to use the project root
-  nodeId: process.env.NEXT_PUBLIC_OSF_NODE_ID || "",
-
-  // Optional: Folder path within the project/node where files should be stored
-  // Example: "data/experiment-results/"
-  // Leave as empty string to store in the root directory
-  folderPath: "online_data_repo/",
 }
+
+// Server-side only configuration
+export const getServerConfig = () => ({
+  token: process.env.OSF_API_TOKEN,
+  projectId: process.env.OSF_PROJECT_ID,
+  nodeId: process.env.OSF_NODE_ID || "",
+})

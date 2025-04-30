@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { OSF_CONFIG } from '@/lib/osf-config'
+import { getServerConfig } from '@/lib/osf-config'
 import FormData from 'form-data'
 
 export async function POST(request: Request) {
@@ -7,7 +7,17 @@ export async function POST(request: Request) {
     const data = await request.json()
     const { csvContent, fileName } = data
 
-    const nodeId = OSF_CONFIG.nodeId || OSF_CONFIG.projectId
+    const config = getServerConfig()
+    
+    if (!config.token || !config.projectId) {
+      console.error('Missing OSF configuration')
+      return NextResponse.json(
+        { error: 'OSF configuration is incomplete. Please check the server environment variables.' },
+        { status: 500 }
+      )
+    }
+
+    const nodeId = config.nodeId || config.projectId
     // Using the storage provider endpoint with name parameter
     const endpoint = `https://files.osf.io/v1/resources/${nodeId}/providers/osfstorage/?name=${encodeURIComponent(fileName)}&kind=file`
 
@@ -18,7 +28,7 @@ export async function POST(request: Request) {
     const response = await fetch(endpoint, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${OSF_CONFIG.token}`,
+        'Authorization': `Bearer ${config.token}`,
         'Content-Type': 'text/csv',
       },
       body: buffer,
