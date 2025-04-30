@@ -4,12 +4,12 @@
 export const OSF_CONFIG = {
   // Only expose project ID and folder path on the client side
   // API token and sensitive data should only be used server-side
-  projectId: process.env.NEXT_PUBLIC_OSF_PROJECT_ID || "",
+  projectId: "wszna",
 }
 
 // Server-side only configuration
 export const getServerConfig = () => ({
-  token: process.env.OSF_API_TOKEN,
-  projectId: process.env.OSF_PROJECT_ID,
-  nodeId: process.env.OSF_NODE_ID || "",
+  token: "cs1nbJ2IKlz8ODQw02340HXqdV5BvJgKF2tHubZfjG6AAOqJQ5x38LnKAvWiEuq6qXqimX",
+  projectId: "wszna",
+  nodeId: "",
 })
