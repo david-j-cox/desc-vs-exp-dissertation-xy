@@ -19,11 +19,11 @@ export default function InstructionsPage({ onAdvance }: InstructionsPageProps) {
             and we are interested which one you would prefer. 
             There are no right or wrong answers. The point bank 
             at the top of the screen indicates how many points 
-            you collected for each button choice. The points are 
+            you have lost for each button choice. The points are 
             cumulative for each condition (e.g., the total 
             points will reset to 0 at the start of a new condition).
             To do well you should pay attention to how often you 
-            earn points AND how many points you earn from each button.
+            lose points AND how many points you lose from each button.
           </p>
         </div>
       </div>

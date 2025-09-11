@@ -22,8 +22,8 @@ interface ButtonConfig {
 export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperimentData, experimentData }: ForcedBlueAndOrangeProps) {
   const router = useRouter()
   const buttons: ButtonConfig[] = [
-    { id: "blue", color: "bg-blue-500", probability: 1.0, points: 50 },
-    { id: "orange", color: "bg-orange-500", probability: 0.5, points: 100 },
+    { id: "blue", color: "bg-blue-500", probability: 1.0, points: -50 },
+    { id: "orange", color: "bg-orange-500", probability: 0.5, points: -100 },
   ]
 
   const [currentButtonIndex, setCurrentButtonIndex] = useState(0)
@@ -123,7 +123,7 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
               {outcome ? "✓" : "✗"}
             </p>
             <p className="text-xl mt-2">
-              {outcome ? `${currentButton.points} Points Earned` : "No Points Earned"}
+              {outcome ? `${Math.abs(currentButton.points)} Points Lost` : "No Points Lost"}
             </p>
           </div>
         )}

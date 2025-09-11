@@ -41,10 +41,10 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
   const TOTAL_TRIALS = TRIALS_PER_STIMULUS * 4 // 4 stimuli, 10 trials each
 
   const stimuli: Stimulus[] = [
-    { id: "A", probability: 1, color: "bg-red-500", points: 50, imageUrl: "/images/stimulus-a.png" },
-    { id: "B", probability: 0.5, color: "bg-blue-500", points: 100, imageUrl: "/images/stimulus-b.png" },
-    { id: "C", probability: 0.3, color: "bg-green-500", points: 100, imageUrl: "/images/stimulus-c.png" },
-    { id: "D", probability: 0.1, color: "bg-purple-500", points: 100, imageUrl: "/images/stimulus-d.png" },
+    { id: "A", probability: 1, color: "bg-red-500", points: -50, imageUrl: "/images/stimulus-a.png" },
+    { id: "B", probability: 0.5, color: "bg-blue-500", points: -100, imageUrl: "/images/stimulus-b.png" },
+    { id: "C", probability: 0.3, color: "bg-green-500", points: -100, imageUrl: "/images/stimulus-c.png" },
+    { id: "D", probability: 0.1, color: "bg-purple-500", points: -100, imageUrl: "/images/stimulus-d.png" },
   ]
 
   const handleChoice = () => {
@@ -125,7 +125,7 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
             {outcome === "success" ? "✓" : "✗"}
           </p>
           <p className="text-xl mt-2">
-            {outcome === "success" ? `${currentStimulus.points} Points Earned` : "No Points Earned"}
+            {outcome === "success" ? `${Math.abs(currentStimulus.points)} Points Lost` : "No Points Lost"}
           </p>
         </div>
       ) : (

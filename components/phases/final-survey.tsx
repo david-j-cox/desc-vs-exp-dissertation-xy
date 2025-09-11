@@ -69,14 +69,14 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
 
   const getCurrentQuestionResponse = () => {
     const questions = [
-      { number: 1, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-a", key: "q1B1" },
-      { number: 2, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-b", key: "q1B2" },
-      { number: 3, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-c", key: "q1B3" },
-      { number: 4, text: "If you pressed this button 100 times, how many times do you think you would earn points?", stimulus: "stimulus-d", key: "q1B4" },
-      { number: 5, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-a", key: "q2B1" },
-      { number: 6, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-b", key: "q2B2" },
-      { number: 7, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-c", key: "q2B3" },
-      { number: 8, text: "How consistently do you think points are earned from this button?", stimulus: "stimulus-d", key: "q2B4" },
+      { number: 1, text: "If you pressed this button 100 times, how many times do you think you would lose points?", stimulus: "stimulus-a", key: "q1B1" },
+      { number: 2, text: "If you pressed this button 100 times, how many times do you think you would lose points?", stimulus: "stimulus-b", key: "q1B2" },
+      { number: 3, text: "If you pressed this button 100 times, how many times do you think you would lose points?", stimulus: "stimulus-c", key: "q1B3" },
+      { number: 4, text: "If you pressed this button 100 times, how many times do you think you would lose points?", stimulus: "stimulus-d", key: "q1B4" },
+      { number: 5, text: "How consistently do you think points are lost from this button?", stimulus: "stimulus-a", key: "q2B1" },
+      { number: 6, text: "How consistently do you think points are lost from this button?", stimulus: "stimulus-b", key: "q2B2" },
+      { number: 7, text: "How consistently do you think points are lost from this button?", stimulus: "stimulus-c", key: "q2B3" },
+      { number: 8, text: "How consistently do you think points are lost from this button?", stimulus: "stimulus-d", key: "q2B4" },
       { number: 9, text: "Which button do you think gives the BEST outcome?", stimulus: "all-images", key: "q3" },
       { number: 10, text: "Which button do you think gives the WORST outcome?", stimulus: "all-images", key: "q4" },
       { number: 11, text: "What strategy did you use to pick between these two buttons?", stimulus: "stimulus-a-b", key: "q5" },
@@ -162,7 +162,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               <Image src="/images/stimulus-a.png" alt="Button 1" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
-              If you pressed this button 100 times, how many times do you think you would earn points?
+              If you pressed this button 100 times, how many times do you think you would lose points?
             </label>
             <Input
               type="number"
@@ -179,7 +179,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               <Image src="/images/stimulus-b.png" alt="Button 2" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
-              If you pressed this button 100 times, how many times do you think you would earn points?
+              If you pressed this button 100 times, how many times do you think you would lose points?
             </label>
             <Input
               type="number"
@@ -196,7 +196,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               <Image src="/images/stimulus-c.png" alt="Button 3" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
-              If you pressed this button 100 times, how many times do you think you would earn points?
+              If you pressed this button 100 times, how many times do you think you would lose points?
             </label>
             <Input
               type="number"
@@ -213,7 +213,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               <Image src="/images/stimulus-d.png" alt="Button 4" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
-              If you pressed this button 100 times, how many times do you think you would earn points?
+              If you pressed this button 100 times, how many times do you think you would lose points?
             </label>
             <Input
               type="number"
@@ -230,7 +230,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               <Image src="/images/stimulus-a.png" alt="Button 1" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
-              How consistently do you think points are earned from this button?
+              How consistently do you think points are lost from this button?
             </label>
             <Textarea
               value={responses.q2B1 || ""}
@@ -246,7 +246,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               <Image src="/images/stimulus-b.png" alt="Button 2" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
-              How consistently do you think points are earned from this button?
+              How consistently do you think points are lost from this button?
             </label>
             <Textarea
               value={responses.q2B2 || ""}
@@ -262,7 +262,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               <Image src="/images/stimulus-c.png" alt="Button 3" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
-              How consistently do you think points are earned from this button?
+              How consistently do you think points are lost from this button?
             </label>
             <Textarea
               value={responses.q2B3 || ""}
@@ -278,7 +278,7 @@ export default function FinalSurvey({ onComplete, addTrialData }: FinalSurveyPro
               <Image src="/images/stimulus-d.png" alt="Button 4" width={256} height={256} className="w-64 h-64" />
             </div>
             <label className="block font-medium text-center">
-              How consistently do you think points are earned from this button?
+              How consistently do you think points are lost from this button?
             </label>
             <Textarea
               value={responses.q2B4 || ""}
