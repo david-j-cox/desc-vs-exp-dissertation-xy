@@ -21,7 +21,7 @@ export default function FinalChoiceBlueOrange({
 
     const isBlue = choice === "blue"
     const success = isBlue ? true : Math.random() < 0.5
-    const points = isBlue ? 50 : (success ? 100 : 0)
+    const points = isBlue ? -50 : (success ? -100 : 0)
     
     // Record trial data
     addTrialData({

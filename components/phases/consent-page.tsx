@@ -20,8 +20,8 @@ export default function ConsentPage({ onAdvance }: ConsentPageProps) {
         <div className="mb-4">
           <p>
             In this study you will respond to a series of buttons that may or may not 
-            lead to points with some programmed probability (e.g., 100% of 70 points or
-            30% chance of 150 points). The purpose of this research project is to
+            lead to losing points with some programmed probability (e.g., 100% chance of losing 70 points or
+            30% chance of losing 150 points). The purpose of this research project is to
             understand how your interaction with those buttons influences your 
             choices over time. 
           </p>
