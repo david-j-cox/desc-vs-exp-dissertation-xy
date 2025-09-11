@@ -121,8 +121,8 @@ export default function ForcedTrialsWithImages({ onAdvance, addTrialData, onFail
     <div className="flex flex-col items-center justify-center min-h-[400px]">
       {showOutcome ? (
         <div className="text-center">
-          <p className={`text-4xl font-bold ${outcome === "success" ? "text-green-600" : "text-red-600"}`}>
-            {outcome === "success" ? "✓" : "✗"}
+          <p className={`text-4xl font-bold ${outcome === "success" ? "text-red-600" : "text-green-600"}`}>
+            {outcome === "success" ? "✗" : "✓"}
           </p>
           <p className="text-xl mt-2">
             {outcome === "success" ? `${Math.abs(currentStimulus.points)} Points Lost` : "No Points Lost"}
