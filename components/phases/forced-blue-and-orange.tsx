@@ -119,8 +119,8 @@ export default function ForcedBlueAndOrange({ onAdvance, addTrialData, setExperi
           </Button>
         ) : (
           <div className="text-center w-64 h-64 flex flex-col items-center justify-center">
-            <p className={`text-4xl font-bold ${outcome ? "text-green-600" : "text-red-600"}`}>
-              {outcome ? "✓" : "✗"}
+            <p className={`text-4xl font-bold ${outcome ? "text-red-600" : "text-green-600"}`}>
+              {outcome ? "✗" : "✓"}
             </p>
             <p className="text-xl mt-2">
               {outcome ? `${Math.abs(currentButton.points)} Points Lost` : "No Points Lost"}
