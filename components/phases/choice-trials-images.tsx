@@ -79,8 +79,8 @@ export default function ChoiceTrialsImages({
 
       // Check if the choice was correct
       // For losses, we want to choose the option with LOWER probability of loss
-      const isCorrectChoice = (currentPairIndex === 0 && pendingChoice.choiceIndex === 1) || // Should choose C over A (lower loss probability)
-                            (currentPairIndex === 1 && pendingChoice.choiceIndex === 0)    // Should choose D over B (lower loss probability)
+      const isCorrectChoice = (currentPairIndex === 0 && pendingChoice.choiceIndex === 0) || // Should choose C over A (lower loss probability)
+                            (currentPairIndex === 1 && pendingChoice.choiceIndex === 1)    // Should choose D over B (lower loss probability)
       setCurrentAttemptChoices(prev => [...prev, isCorrectChoice])
 
       // Record trial data with sequential trial number
