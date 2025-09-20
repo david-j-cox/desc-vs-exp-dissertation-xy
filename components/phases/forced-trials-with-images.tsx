@@ -24,7 +24,7 @@ interface Stimulus {
 // Define the exact outcomes for each trial of each stimulus
 const TRIAL_OUTCOMES: Record<string, boolean[]> = {
   A: [true, true, true, true, true, true, true, true, true, true], // 10 trials, all true
-  B: [true, false, false, true, true, false, true, false, true, false], // 10 trials, 5 true
+  B: [true, false, false, true, true, false, true, false, false, true], // 10 trials, 5 true
   C: [true, true, false, true, true, true, false, true, false, true], // 10 trials, 7 true
   D: [true, true, true, true, true, true, true, false, true, true], // 10 trials, 9 true
 }
